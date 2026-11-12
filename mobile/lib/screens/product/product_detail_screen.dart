@@ -98,7 +98,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.watch<AuthProvider>(context);
+    final authProvider = context.watch<AuthProvider>();
     final isAdmin = authProvider.isAdmin;
 
     return Scaffold(

@@ -35,9 +35,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.watch<AuthProvider>(context);
-    final catProvider = Provider.watch<CategoryProvider>(context);
-    final prodProvider = Provider.watch<ProductProvider>(context);
+    final authProvider = context.watch<AuthProvider>();
+    final catProvider = context.watch<CategoryProvider>();
+    final prodProvider = context.watch<ProductProvider>();
     final isAdmin = authProvider.isAdmin;
 
     return Scaffold(

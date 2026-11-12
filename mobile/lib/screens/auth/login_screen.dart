@@ -64,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.watch<AuthProvider>(context);
+    final authProvider = context.watch<AuthProvider>();
 
     return Scaffold(
       body: SafeArea(
@@ -116,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     decoration: BoxDecoration(
                       color: Colors.amber.shade50,
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.parse('1px solid #FFE082'),
+                      border: Border.all(color: Colors.amber.shade300),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

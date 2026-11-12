@@ -69,7 +69,7 @@ class _CategoryFormScreenState extends State<CategoryFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final catProvider = Provider.watch<CategoryProvider>(context);
+    final catProvider = context.watch<CategoryProvider>();
 
     return Scaffold(
       appBar: AppBar(

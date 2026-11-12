@@ -64,7 +64,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.watch<AuthProvider>(context);
+    final authProvider = context.watch<AuthProvider>();
 
     return Scaffold(
       appBar: AppBar(

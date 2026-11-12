@@ -76,8 +76,8 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.watch<AuthProvider>(context);
-    final catProvider = Provider.watch<CategoryProvider>(context);
+    final authProvider = context.watch<AuthProvider>();
+    final catProvider = context.watch<CategoryProvider>();
     final isAdmin = authProvider.isAdmin;
 
     return Scaffold(

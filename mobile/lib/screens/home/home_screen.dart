@@ -68,9 +68,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.watch<AuthProvider>(context);
-    final catProvider = Provider.watch<CategoryProvider>(context);
-    final prodProvider = Provider.watch<ProductProvider>(context);
+    final authProvider = context.watch<AuthProvider>();
+    final catProvider = context.watch<CategoryProvider>();
+    final prodProvider = context.watch<ProductProvider>();
 
     final user = authProvider.user;
     final isAdmin = user?.isAdmin ?? false;

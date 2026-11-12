@@ -192,8 +192,8 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final catProvider = Provider.watch<CategoryProvider>(context);
-    final prodProvider = Provider.watch<ProductProvider>(context);
+    final catProvider = context.watch<CategoryProvider>();
+    final prodProvider = context.watch<ProductProvider>();
 
     return Scaffold(
       appBar: AppBar(
