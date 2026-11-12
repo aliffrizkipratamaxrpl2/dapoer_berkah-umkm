@@ -1,5 +1,5 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import '../models/product_model.dart';
 import '../services/api_service.dart';
 
@@ -53,7 +53,7 @@ class ProductProvider with ChangeNotifier {
     String? description,
     required double price,
     required int stock,
-    File? imageFile,
+    XFile? imageFile,
   }) async {
     _isLoading = true;
     notifyListeners();
@@ -85,7 +85,7 @@ class ProductProvider with ChangeNotifier {
     String? description,
     required double price,
     required int stock,
-    File? imageFile,
+    XFile? imageFile,
   }) async {
     _isLoading = true;
     notifyListeners();
@@ -129,4 +129,3 @@ class ProductProvider with ChangeNotifier {
     }
   }
 }
-

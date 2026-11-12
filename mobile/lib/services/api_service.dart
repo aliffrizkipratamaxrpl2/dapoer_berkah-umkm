@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/api_config.dart';
 
@@ -235,14 +235,14 @@ class ApiService {
     }
   }
 
-  // Upload Produk Baru (Multipart Form Data untuk gambar)
+  // Upload Produk Baru (Multipart Form Data untuk gambar, kompatibel Mobile & Web)
   static Future<ApiResponse<Map<String, dynamic>>> createProduct({
     required int categoryId,
     required String name,
     String? description,
     required double price,
     required int stock,
-    File? imageFile,
+    XFile? imageFile,
   }) async {
     try {
       final token = await getToken();
@@ -263,7 +263,10 @@ class ApiService {
 
       // Field file gambar (jika dipilih)
       if (imageFile != null) {
-        request.files.add(await http.MultipartFile.fromPath('image', imageFile.path));
+        final bytes = await imageFile.readAsBytes();
+        request.files.add(
+          http.MultipartFile.fromBytes('image', bytes, filename: imageFile.name),
+        );
       }
 
       final streamedResponse = await request.send();
@@ -287,7 +290,7 @@ class ApiService {
     String? description,
     required double price,
     required int stock,
-    File? imageFile,
+    XFile? imageFile,
   }) async {
     try {
       final token = await getToken();
@@ -306,7 +309,10 @@ class ApiService {
       request.fields['stock'] = stock.toString();
 
       if (imageFile != null) {
-        request.files.add(await http.MultipartFile.fromPath('image', imageFile.path));
+        final bytes = await imageFile.readAsBytes();
+        request.files.add(
+          http.MultipartFile.fromBytes('image', bytes, filename: imageFile.name),
+        );
       }
 
       final streamedResponse = await request.send();
@@ -340,4 +346,3 @@ class ApiService {
     }
   }
 }
-

@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -23,7 +23,8 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   late TextEditingController _stockController;
   late TextEditingController _descController;
   int? _selectedCategoryId;
-  File? _selectedImageFile;
+  XFile? _selectedImageFile;
+  Uint8List? _selectedImageBytes;
   final ImagePicker _picker = ImagePicker();
 
   bool get isEdit => widget.product != null;
@@ -68,8 +69,10 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
       );
 
       if (pickedFile != null) {
+        final bytes = await pickedFile.readAsBytes();
         setState(() {
-          _selectedImageFile = File(pickedFile.path);
+          _selectedImageFile = pickedFile;
+          _selectedImageBytes = bytes;
         });
       }
     } catch (e) {
@@ -216,20 +219,20 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: Colors.grey.shade300, width: 1.5),
                   ),
-                  child: _selectedImageFile != null
+                  child: _selectedImageBytes != null
                       ? ClipRRect(
                           borderRadius: BorderRadius.circular(12),
                           child: Stack(
                             fit: StackFit.expand,
                             children: [
-                              Image.file(_selectedImageFile!, fit: BoxFit.cover),
+                              Image.memory(_selectedImageBytes!, fit: BoxFit.cover),
                               Positioned(
                                 bottom: 8,
                                 right: 8,
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                   decoration: BoxDecoration(
-                                    color: Colors.black.withOpacity(0.7),
+                                    color: Colors.black.withAlpha(180),
                                     borderRadius: BorderRadius.circular(6),
                                   ),
                                   child: const Row(
@@ -258,7 +261,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                                     child: Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                       decoration: BoxDecoration(
-                                        color: Colors.black.withOpacity(0.7),
+                                        color: Colors.black.withAlpha(180),
                                         borderRadius: BorderRadius.circular(6),
                                       ),
                                       child: const Row(
@@ -409,4 +412,3 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     );
   }
 }
-
