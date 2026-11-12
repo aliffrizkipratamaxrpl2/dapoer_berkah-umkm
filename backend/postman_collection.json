@@ -1,0 +1,217 @@
+{
+  "info": {
+    "_postman_id": "ujilevel-umkm-dapoerberkah",
+    "name": "Dapoer Berkah UMKM API",
+    "description": "Koleksi REST API untuk Uji Level Sistem UMKM (Node.js Express + MySQL)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000" },
+    { "key": "adminToken", "value": "" },
+    { "key": "kasirToken", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. Autentikasi",
+      "item": [
+        {
+          "name": "Register Admin Baru",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Admin Toko\",\n  \"email\": \"admin.baru@dapoerberkah.com\",\n  \"password\": \"admin123\",\n  \"role\": \"admin\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register"] }
+          }
+        },
+        {
+          "name": "Register Kasir Baru",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Staf Kasir\",\n  \"email\": \"kasir.baru@dapoerberkah.com\",\n  \"password\": \"kasir123\",\n  \"role\": \"kasir\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register"] }
+          }
+        },
+        {
+          "name": "Login sebagai Admin",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@dapoerberkah.com\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Login sebagai Kasir",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"kasir@dapoerberkah.com\",\n  \"password\": \"kasir123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Get Profil Pengguna",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/profile", "host": ["{{baseUrl}}"], "path": ["api", "auth", "profile"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Kategori Menu (CRUD)",
+      "item": [
+        {
+          "name": "GET Semua Kategori",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/categories", "host": ["{{baseUrl}}"], "path": ["api", "categories"] }
+          }
+        },
+        {
+          "name": "GET Kategori by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/categories/1", "host": ["{{baseUrl}}"], "path": ["api", "categories", "1"] }
+          }
+        },
+        {
+          "name": "POST Tambah Kategori (Role Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Paket Hemat Nusantara\",\n  \"description\": \"Paket komplit nasi, lauk, dan minuman harga hemat\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/categories", "host": ["{{baseUrl}}"], "path": ["api", "categories"] }
+          }
+        },
+        {
+          "name": "PUT Update Kategori (Role Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Paket Super Hemat\",\n  \"description\": \"Deskripsi kategori yang telah diperbarui\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/categories/1", "host": ["{{baseUrl}}"], "path": ["api", "categories", "1"] }
+          }
+        },
+        {
+          "name": "DELETE Kategori (Role Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/categories/3", "host": ["{{baseUrl}}"], "path": ["api", "categories", "3"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Produk Menu (CRUD & File Upload)",
+      "item": [
+        {
+          "name": "GET Semua Produk",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api", "products"] }
+          }
+        },
+        {
+          "name": "GET Filter Produk by Category & Search",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/products?category_id=1&search=Goreng",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products"],
+              "query": [
+                { "key": "category_id", "value": "1" },
+                { "key": "search", "value": "Goreng" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET Produk by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/products/1", "host": ["{{baseUrl}}"], "path": ["api", "products", "1"] }
+          }
+        },
+        {
+          "name": "POST Tambah Produk dengan Upload Gambar (Role Admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "category_id", "value": "1", "type": "text" },
+                { "key": "name", "value": "Soto Ayam Lamongan Berkah", "type": "text" },
+                { "key": "description", "value": "Soto ayam kuah kuning gurih koya renyah", "type": "text" },
+                { "key": "price", "value": "20000", "type": "text" },
+                { "key": "stock", "value": "30", "type": "text" },
+                { "key": "image", "type": "file", "src": [] }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api", "products"] }
+          }
+        },
+        {
+          "name": "PUT Update Produk (Role Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "category_id", "value": "1", "type": "text" },
+                { "key": "name", "value": "Nasi Goreng Spesial Berkah Super", "type": "text" },
+                { "key": "description", "value": "Nasi goreng bumbu rempah spesial porsi kenyang", "type": "text" },
+                { "key": "price", "value": "24000", "type": "text" },
+                { "key": "stock", "value": "45", "type": "text" }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/api/products/1", "host": ["{{baseUrl}}"], "path": ["api", "products", "1"] }
+          }
+        },
+        {
+          "name": "DELETE Produk (Role Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/products/2", "host": ["{{baseUrl}}"], "path": ["api", "products", "2"] }
+          }
+        }
+      ]
+    }
+  ]
+}
