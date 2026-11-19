@@ -4,30 +4,51 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-const DB_HOST = process.env.DB_HOST || 'localhost';
-const DB_USER = process.env.DB_USER || 'root';
-const DB_PASSWORD = process.env.DB_PASSWORD || '';
-const DB_NAME = process.env.DB_NAME || 'ujilevel_umkm';
-const DB_PORT = parseInt(process.env.DB_PORT || '3306', 10);
-
 async function initializeDatabase() {
   let connection;
   try {
-    console.log(`🔌 Menghubungkan ke MySQL di ${DB_HOST}:${DB_PORT} ...`);
-    connection = await mysql.createConnection({
-      host: DB_HOST,
-      user: DB_USER,
-      password: DB_PASSWORD,
-      port: DB_PORT,
-    });
+    const isCloudHost = 
+      process.env.DATABASE_URL || 
+      process.env.DB_SSL === 'true' || 
+      (process.env.DB_HOST && process.env.DB_HOST.includes('aivencloud.com'));
 
-    console.log(`🛠️ Membuat database '${DB_NAME}' jika belum ada...`);
-    await connection.query(
-      `CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`
-    );
-    await connection.changeUser({ database: DB_NAME });
+    if (process.env.DATABASE_URL) {
+      console.log(`🔌 Menghubungkan ke Cloud Database (Aiven/URL) ...`);
+      connection = await mysql.createConnection({
+        uri: process.env.DATABASE_URL,
+        ssl: { rejectUnauthorized: false },
+      });
+    } else {
+      const DB_HOST = process.env.DB_HOST || 'localhost';
+      const DB_USER = process.env.DB_USER || 'root';
+      const DB_PASSWORD = process.env.DB_PASSWORD || '';
+      const DB_NAME = process.env.DB_NAME || (isCloudHost ? 'defaultdb' : 'ujilevel_umkm');
+      const DB_PORT = parseInt(process.env.DB_PORT || (isCloudHost ? '10000' : '3306'), 10);
 
-    console.log(`📋 Membuat tabel-tabel database...`);
+      console.log(`🔌 Menghubungkan ke MySQL di ${DB_HOST}:${DB_PORT} ...`);
+      
+      const connConfig = {
+        host: DB_HOST,
+        user: DB_USER,
+        password: DB_PASSWORD,
+        port: DB_PORT,
+      };
+
+      if (isCloudHost) {
+        connConfig.database = DB_NAME;
+        connConfig.ssl = { rejectUnauthorized: false };
+        connection = await mysql.createConnection(connConfig);
+      } else {
+        connection = await mysql.createConnection(connConfig);
+        console.log(`🛠️ Membuat database '${DB_NAME}' jika belum ada...`);
+        await connection.query(
+          `CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`
+        );
+        await connection.changeUser({ database: DB_NAME });
+      }
+    }
+
+    console.log(`📋 Menyiapkan tabel-tabel database...`);
 
     // Hapus urutan tabel jika perlu reset
     await connection.query(`SET FOREIGN_KEY_CHECKS = 0;`);
@@ -128,8 +149,8 @@ async function initializeDatabase() {
       ]
     );
 
-    console.log(`✅ Database '${DB_NAME}' berhasil diinisialisasi beserta struktur tabel dan data awal!`);
-    console.log(`   Akun login default:`);
+    console.log(`✅ Inisialisasi struktur tabel dan data awal database berhasil!`);
+    console.log(`   Akun default:`);
     console.log(`   - Admin: admin@dapoerberkah.com / password: admin123`);
     console.log(`   - Kasir: kasir@dapoerberkah.com / password: kasir123`);
   } catch (error) {
@@ -143,4 +164,3 @@ async function initializeDatabase() {
 }
 
 initializeDatabase();
-

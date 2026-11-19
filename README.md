@@ -2,7 +2,11 @@
 
 Aplikasi digital terintegrasi untuk mendukung proses operasional, manajemen katalog produk, stok menu, dan pelayanan pelanggan pada **UMKM Kuliner "Dapoer Berkah"**.
 
-Proyek ini dibangun untuk memenuhi seluruh ketentuan teknis dan kriteria **Uji Level Aplikasi UMKM**, terdiri dari backend REST API berbasis **Node.js & Express.js**, database relasional **MySQL**, media penyimpanan file foto terintegrasi (**Multer**), dan aplikasi mobile client berbasis **Flutter**.
+Proyek ini dibangun untuk memenuhi seluruh ketentuan teknis dan kriteria **Uji Level Aplikasi UMKM (Mata Pelajaran KOKE)**, terdiri dari backend REST API berbasis **Node.js & Express.js**, database relasional **MySQL** (Lokal & Cloud **Aiven**), media penyimpanan file foto terintegrasi (**Multer**), antarmuka serverless ready (**Vercel**), dan aplikasi mobile client berbasis **Flutter**.
+
+> 📄 **Dokumen Formal SRS (Software Requirements Specification)**:  
+> Seluruh rincian kebutuhan sistem, metode SDLC Waterfall, jadwal gantt chart, diagram UML (Use Case, Activity, Class), ERD, kamus data, tabel Blackbox Testing, dan panduan deployment cloud tersedia lengkap di:  
+> 👉 [**DOKUMEN_SRS.md**](file:///c:/Users/ASUS/OneDrive/Dokumen/ujilevel-umkm/DOKUMEN_SRS.md)
 
 ---
 
@@ -14,10 +18,12 @@ Proyek ini dibangun untuk memenuhi seluruh ketentuan teknis dan kriteria **Uji L
 5. [Dokumentasi REST API](#-dokumentasi-rest-api)
 6. [Struktur Direktori](#-struktur-direktori)
 7. [Panduan Instalasi & Menjalankan](#-panduan-instalasi--menjalankan)
-   - [Langkah 1: Menjalankan Database MySQL](#langkah-1-menjalankan-database-mysql)
+   - [Langkah 1: Menjalankan Database MySQL (Lokal atau Aiven Cloud)](#langkah-1-menjalankan-database-mysql-lokal-atau-aiven-cloud)
    - [Langkah 2: Menjalankan Backend REST API](#langkah-2-menjalankan-backend-rest-api)
    - [Langkah 3: Menjalankan Mobile App Flutter](#langkah-3-menjalankan-mobile-app-flutter)
-8. [Akun Uji Coba Default](#-akun-uji-coba-default)
+8. [Panduan Deployment Cloud (Vercel & Aiven)](#-panduan-deployment-cloud-vercel--aiven)
+9. [Hasil Pengujian (Blackbox Testing)](#-hasil-pengujian-blackbox-testing)
+10. [Akun Uji Coba Default](#-akun-uji-coba-default)
 
 ---
 
@@ -316,28 +322,31 @@ ujilevel-umkm/
 
 ## 🚀 Panduan Instalasi & Menjalankan
 
-### Langkah 1: Menjalankan Database MySQL
-1. Buka **XAMPP Control Panel** (atau Laragon).
-2. Klik tombol **Start** pada modul **MySQL**.
-3. Pastikan port standar `3306` aktif.
+### Langkah 1: Menjalankan Database MySQL (Lokal atau Aiven Cloud)
+- **Opsi A (Lokal via XAMPP / Laragon)**:
+  1. Buka **XAMPP Control Panel** dan klik **Start** pada modul **MySQL**.
+  2. Buka terminal di folder `backend/` dan jalankan script inisialisasi:
+     ```bash
+     cd backend
+     npm run db:init
+     ```
+- **Opsi B (Cloud via Aiven MySQL)**:
+  1. Buat service MySQL di [Aiven Console](https://console.aiven.io/).
+  2. Salin **Service URI** dan atur di file `backend/.env` sebagai `DATABASE_URL`.
+  3. Jalankan `npm run db:init` untuk membuat skema dan seeding otomatis di cloud Aiven.
 
 ### Langkah 2: Menjalankan Backend REST API
 1. Buka terminal pada folder proyek:
    ```bash
    cd backend
    ```
-2. Inisialisasi database dan lakukan seeding data awal otomatis:
-   ```bash
-   npm run db:init
-   ```
-   *Perintah ini akan secara otomatis membuat database `ujilevel_umkm`, tabel-tabel, relasi Foreign Key, serta mengisikan akun Admin & Kasir default dan contoh data menu.*
-3. Jalankan server backend:
+2. Jalankan server backend:
    ```bash
    npm run dev
    # atau
    npm start
    ```
-4. Server REST API akan berjalan pada `http://localhost:5000`. Anda dapat mengakses URL tersebut di browser untuk melihat ringkasan status endpoint.
+3. Server REST API akan berjalan pada `http://localhost:5000`. Anda dapat mengakses URL tersebut di browser untuk melihat ringkasan status endpoint.
 
 ### Langkah 3: Menjalankan Mobile App Flutter
 1. Buka terminal baru dan masuk ke folder `mobile`:
@@ -349,13 +358,73 @@ ujilevel-umkm/
    flutter pub get
    ```
 3. Sesuaikan konfigurasi IP di [`mobile/lib/config/api_config.dart`](file:///c:/Users/ASUS/OneDrive/Dokumen/ujilevel-umkm/mobile/lib/config/api_config.dart):
-   - Jika menggunakan **Android Emulator**: Biarkan default `http://10.0.2.2:5000`.
-   - Jika menggunakan **Perangkat Fisik (HP)**: Ubah IP menjadi IP lokal komputer Anda (contoh: `http://192.168.1.15:5000`) dan pastikan HP serta laptop berada dalam jaringan Wi-Fi yang sama.
-   - Jika menjalankan di **Chrome / Windows Desktop**: Gunakan `http://localhost:5000`.
+   - Jika menjalankan di **Chrome / Browser Web**: Otomatis menggunakan `http://localhost:5000` (atau URL Vercel).
+   - Jika menggunakan **Android Emulator**: Menggunakan `http://10.0.2.2:5000`.
+   - Jika menggunakan **Perangkat Fisik (HP)**: Gunakan IP Wi-Fi lokal laptop Anda (contoh: `http://192.168.1.15:5000`) atau arahkan langsung ke domain Vercel API Anda.
 4. Jalankan aplikasi:
    ```bash
    flutter run
+   # atau langsung di browser Chrome:
+   flutter run -d chrome
    ```
+
+---
+
+## ☁️ Panduan Deployment Cloud (Vercel & Aiven)
+
+### 1. Deploy Database ke Aiven Cloud
+1. Daftar dan login di [Aiven Console](https://console.aiven.io/).
+2. Buat layanan baru: **Create Service** -> **MySQL** -> Region Singapore.
+3. Salin **Service URI** di bagian Connection Information:
+   `mysql://avnadmin:PASSWORD@HOST:PORT/defaultdb?ssl-mode=REQUIRED`
+4. Jalankan migrasi tabel dan data awal dari terminal lokal:
+   ```powershell
+   $env:DATABASE_URL="mysql://avnadmin:PASSWORD@HOST:PORT/defaultdb?ssl-mode=REQUIRED"
+   cd backend
+   node scripts/initDb.js
+   ```
+
+### 2. Deploy REST API ke Vercel
+1. Pastikan seluruh file sudah di-push ke GitHub:
+   ```bash
+   git add .
+   git commit -m "feat: ready for cloud deployment"
+   git push origin master
+   ```
+2. Buka dashboard [Vercel](https://vercel.com/dashboard) -> Klik **Add New** -> **Project**.
+3. Hubungkan repositori GitHub `ujilevel-umkm`.
+4. Pada bagian **Root Directory**, pilih folder `backend`.
+5. Masukkan **Environment Variables**:
+   - `DATABASE_URL`: Masukkan Service URI Aiven Cloud
+   - `JWT_SECRET`: `rahasia_super_aman_kunci_jwt_ujilevel_umkm_2026`
+   - `JWT_EXPIRES_IN`: `7d`
+   - `NODE_ENV`: `production`
+6. Klik **Deploy**. URL REST API langsung aktif (misal: `https://ujilevel-umkm.vercel.app`).
+
+---
+
+## 🧪 Hasil Pengujian (Blackbox Testing)
+
+Hasil pengujian fungsionalitas sistem secara menyeluruh:
+
+| No | Modul / Skenario Pengujian | Masukan (Input) | Ekspektasi | Hasil Pengujian | Status |
+|:--:|:--------------------------|:----------------|:-----------|:----------------|:------:|
+| 1  | Registrasi pengguna baru | Form data lengkap & valid | Akun tersimpan, HTTP 201 | Sesuai ekspektasi | **PASSED** |
+| 2  | Validasi email duplikat | Email yang sudah terdaftar | HTTP 400 Bad Request | Sesuai ekspektasi | **PASSED** |
+| 3  | Login akun terdaftar | Email & password benar | Token JWT & profil, HTTP 200 | Sesuai ekspektasi | **PASSED** |
+| 4  | Login password salah | Email benar, password keliru | HTTP 401 Unauthorized | Sesuai ekspektasi | **PASSED** |
+| 5  | Akses privat tanpa token | Request tanpa header Bearer | HTTP 401 Unauthorized | Sesuai ekspektasi | **PASSED** |
+| 6  | Restriksi role Kasir (POST) | Kasir tambah kategori/menu | HTTP 403 Forbidden | Sesuai ekspektasi | **PASSED** |
+| 7  | Admin tambah kategori | Nama kategori & deskripsi | Kategori baru tersimpan | Sesuai ekspektasi | **PASSED** |
+| 8  | Admin edit kategori | Update nama kategori | Data terupdate, HTTP 200 | Sesuai ekspektasi | **PASSED** |
+| 9  | Admin hapus kategori | Konfirmasi hapus kategori | Kategori & relasi terhapus | Sesuai ekspektasi | **PASSED** |
+| 10 | Filter produk by kategori | Parameter `?category_id=1` | Hanya menu kategori terkait | Sesuai ekspektasi | **PASSED** |
+| 11 | Pencarian menu (search) | Query kata kunci `?search=...`| Menampilkan menu yang cocok | Sesuai ekspektasi | **PASSED** |
+| 12 | Admin tambah menu + upload foto| Form menu + file JPG/PNG <= 5MB | Foto tersimpan, HTTP 201 | Sesuai ekspektasi | **PASSED** |
+| 13 | Validasi file upload > 5MB | File foto berukuran 7.8 MB | Ditolak, HTTP 400 Bad Request| Sesuai ekspektasi | **PASSED** |
+| 14 | Admin hapus menu & foto | Konfirmasi hapus menu | Record DB & file foto terhapus| Sesuai ekspektasi | **PASSED** |
+| 15 | Proteksi UI role Kasir | Login sebagai kasir | Tombol tambah/edit/hapus hidden| Sesuai ekspektasi | **PASSED** |
+| 16 | Logout akun | Klik logout di AppBar | Token terhapus, redirect login | Sesuai ekspektasi | **PASSED** |
 
 ---
 
@@ -367,3 +436,4 @@ Untuk mempermudah pengujian saat demonstrasi atau penilaian uji level, telah dis
 | :--- | :--- | :--- | :--- |
 | **Admin** | `admin@dapoerberkah.com` | `admin123` | **Penuh**: CRUD Kategori & Menu Produk, Upload & Hapus Foto Menu |
 | **Kasir** | `kasir@dapoerberkah.com` | `kasir123` | **Terbatas**: Melihat katalog menu, cek ketersediaan stok produk, pencarian menu |
+
