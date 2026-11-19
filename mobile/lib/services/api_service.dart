@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/api_config.dart';
@@ -14,6 +15,25 @@ class ApiResponse<T> {
     required this.message,
     this.data,
   });
+}
+
+// Helper untuk mendeteksi content type gambar secara otomatis
+MediaType _getImageContentType(String filename) {
+  final ext = filename.split('.').last.toLowerCase();
+  switch (ext) {
+    case 'png':
+      return MediaType('image', 'png');
+    case 'webp':
+      return MediaType('image', 'webp');
+    case 'gif':
+      return MediaType('image', 'gif');
+    case 'bmp':
+      return MediaType('image', 'bmp');
+    case 'svg':
+      return MediaType('image', 'svg+xml');
+    default:
+      return MediaType('image', 'jpeg');
+  }
 }
 
 class ApiService {
@@ -196,7 +216,7 @@ class ApiService {
   }
 
   // ------------------------------------------------------------------------
-  // PRODUCTS SERVICES (CRUD + File Upload)
+  // PRODUCTS SERVICES (CRUD + File Upload Bebas)
   // ------------------------------------------------------------------------
   static Future<ApiResponse<List<dynamic>>> getProducts({int? categoryId, String? search}) async {
     try {
@@ -235,7 +255,7 @@ class ApiService {
     }
   }
 
-  // Upload Produk Baru (Multipart Form Data untuk gambar, kompatibel Mobile & Web)
+  // Upload Produk Baru (Multipart Form Data untuk gambar, bebas jenis gambar)
   static Future<ApiResponse<Map<String, dynamic>>> createProduct({
     required int categoryId,
     required String name,
@@ -264,8 +284,16 @@ class ApiService {
       // Field file gambar (jika dipilih)
       if (imageFile != null) {
         final bytes = await imageFile.readAsBytes();
+        final fileName = imageFile.name.isNotEmpty 
+            ? imageFile.name 
+            : 'produk_${DateTime.now().millisecondsSinceEpoch}.jpg';
         request.files.add(
-          http.MultipartFile.fromBytes('image', bytes, filename: imageFile.name),
+          http.MultipartFile.fromBytes(
+            'image', 
+            bytes, 
+            filename: fileName,
+            contentType: _getImageContentType(fileName),
+          ),
         );
       }
 
@@ -310,8 +338,16 @@ class ApiService {
 
       if (imageFile != null) {
         final bytes = await imageFile.readAsBytes();
+        final fileName = imageFile.name.isNotEmpty 
+            ? imageFile.name 
+            : 'produk_${DateTime.now().millisecondsSinceEpoch}.jpg';
         request.files.add(
-          http.MultipartFile.fromBytes('image', bytes, filename: imageFile.name),
+          http.MultipartFile.fromBytes(
+            'image', 
+            bytes, 
+            filename: fileName,
+            contentType: _getImageContentType(fileName),
+          ),
         );
       }
 

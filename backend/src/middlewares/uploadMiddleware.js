@@ -16,33 +16,47 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => {
     // Generate nama file unik: produk-TIMESTAMP-RANDOM.ext
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname).toLowerCase();
+    let ext = path.extname(file.originalname).toLowerCase();
+    
+    // Fallback jika nama file tidak memiliki ekstensi
+    if (!ext || ext === '') {
+      if (file.mimetype === 'image/png') ext = '.png';
+      else if (file.mimetype === 'image/webp') ext = '.webp';
+      else if (file.mimetype === 'image/gif') ext = '.gif';
+      else if (file.mimetype === 'image/bmp') ext = '.bmp';
+      else ext = '.jpg';
+    }
+    
     cb(null, `produk-${uniqueSuffix}${ext}`);
   },
 });
 
-// Filter tipe file: Hanya gambar (jpeg, jpg, png, webp)
+// Filter tipe file fleksibel: Mendukung semua jenis gambar (JPG, PNG, WEBP, GIF, BMP, JFIF, HEIC, AVIF, dll)
 const fileFilter = (req, file, cb) => {
-  const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp'];
   const ext = path.extname(file.originalname).toLowerCase();
+  const allowedExtensions = [
+    '.jpg', '.jpeg', '.png', '.webp', '.gif', '.bmp', '.svg', '.jfif', '.heic', '.heif', '.avif', '.ico'
+  ];
 
-  const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+  const isImageMime = file.mimetype && file.mimetype.startsWith('image/');
+  const isOctetStream = file.mimetype === 'application/octet-stream';
+  const hasImageExt = allowedExtensions.includes(ext);
 
-  if (allowedExtensions.includes(ext) && allowedMimeTypes.includes(file.mimetype)) {
+  // Izinkan jika mimetype gambar, atau ekstensi gambar, atau stream biner gambar dari mobile/web
+  if (isImageMime || hasImageExt || isOctetStream || !ext) {
     cb(null, true);
   } else {
-    cb(new Error('Format file tidak didukung! Hanya file gambar (JPG, JPEG, PNG, WEBP) yang diperbolehkan.'));
+    cb(new Error('Format file tidak didukung! Silakan pilih file gambar yang valid (JPG, JPEG, PNG, WEBP, GIF, dll).'));
   }
 };
 
-// Batasan ukuran: Maksimum 5MB
+// Batasan ukuran ditingkatkan hingga 20MB (mendukung foto resolusi tinggi kamera HP modern)
 const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5 Megabytes
+    fileSize: 20 * 1024 * 1024, // 20 Megabytes
   },
 });
 
 module.exports = upload;
-
