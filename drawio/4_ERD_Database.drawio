@@ -1,0 +1,55 @@
+<mxfile host="app.diagrams.net" modified="2026-11-22T03:50:39.463Z" agent="Mozilla/5.0" version="21.0.0" type="device">
+  <diagram id="diagram_erd" name="4. ERD Database">
+    <mxGraphModel dx="1300" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1250" pageHeight="700" background="#FFFFFF" math="0" shadow="0">
+      <root>
+<mxCell id="0" />
+<mxCell id="1" parent="0" />
+<mxCell id="erd_title" value="&lt;b&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;ENTITY RELATIONSHIP DIAGRAM (ERD) - DATABASE DAPOER BERKAH&lt;/font&gt;&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 12px; color: #546E7A;&quot;&gt;MySQL Database pada Aiven Cloud | Bab IV Sub-Bab 4.2 Perancangan Database&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+      <mxGeometry x="300" y="20" width="600" height="40" as="geometry" />
+    </mxCell>
+<mxCell id="ent_users" value="&lt;b&gt;users&lt;/b&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=28;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;html=1;fillColor=#E8EAF6;strokeColor=#3F51B5;fontColor=#1A237E;" vertex="1" parent="1">
+      <mxGeometry x="60" y="100" width="310" height="230" as="geometry" />
+    </mxCell>
+<mxCell id="f_users_1" value="PK | id : INT (AUTO_INCREMENT)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;overflow=hidden;rotatable=0;fontStyle=1;fontColor=#B71C1C;" vertex="1" parent="ent_users">
+      <mxGeometry y="28" width="310" height="26" as="geometry" />
+    </mxCell>
+<mxCell id="f_users_div1" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;" vertex="1" parent="ent_users">
+      <mxGeometry y="54" width="310" height="6" as="geometry" />
+    </mxCell>
+<mxCell id="f_users_fields" value="   name : VARCHAR(100) NOT NULL&#xa;UK | email : VARCHAR(100) NOT NULL UNIQUE&#xa;   password : VARCHAR(255) NOT NULL (Bcrypt)&#xa;   role : ENUM('admin','kasir') DEFAULT 'kasir'&#xa;   created_at : TIMESTAMP DEFAULT CURRENT_TIMESTAMP&#xa;   updated_at : TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=8;overflow=hidden;rotatable=0;" vertex="1" parent="ent_users">
+      <mxGeometry y="60" width="310" height="170" as="geometry" />
+    </mxCell>
+<mxCell id="ent_categories" value="&lt;b&gt;categories&lt;/b&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=28;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;html=1;fillColor=#E8F5E9;strokeColor=#388E3C;fontColor=#1B5E20;" vertex="1" parent="1">
+      <mxGeometry x="450" y="100" width="310" height="210" as="geometry" />
+    </mxCell>
+<mxCell id="f_cat_1" value="PK | id : INT (AUTO_INCREMENT)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;overflow=hidden;rotatable=0;fontStyle=1;fontColor=#B71C1C;" vertex="1" parent="ent_categories">
+      <mxGeometry y="28" width="310" height="26" as="geometry" />
+    </mxCell>
+<mxCell id="f_cat_div1" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;" vertex="1" parent="ent_categories">
+      <mxGeometry y="54" width="310" height="6" as="geometry" />
+    </mxCell>
+<mxCell id="f_cat_fields" value="   name : VARCHAR(100) NOT NULL&#xa;   description : TEXT NULL&#xa;   created_at : TIMESTAMP DEFAULT CURRENT_TIMESTAMP&#xa;   updated_at : TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=8;overflow=hidden;rotatable=0;" vertex="1" parent="ent_categories">
+      <mxGeometry y="60" width="310" height="150" as="geometry" />
+    </mxCell>
+<mxCell id="ent_products" value="&lt;b&gt;products&lt;/b&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=28;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;html=1;fillColor=#FFF3E0;strokeColor=#F57C00;fontColor=#E65100;" vertex="1" parent="1">
+      <mxGeometry x="870" y="100" width="340" height="270" as="geometry" />
+    </mxCell>
+<mxCell id="f_prod_1" value="PK | id : INT (AUTO_INCREMENT)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;overflow=hidden;rotatable=0;fontStyle=1;fontColor=#B71C1C;" vertex="1" parent="ent_products">
+      <mxGeometry y="28" width="340" height="26" as="geometry" />
+    </mxCell>
+<mxCell id="f_prod_div1" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;" vertex="1" parent="ent_products">
+      <mxGeometry y="54" width="340" height="6" as="geometry" />
+    </mxCell>
+<mxCell id="f_prod_fields" value="FK | category_id : INT NOT NULL (Ref: categories.id)&#xa;   name : VARCHAR(150) NOT NULL&#xa;   description : TEXT NULL&#xa;   price : DECIMAL(12,2) DEFAULT 0.00&#xa;   stock : INT DEFAULT 0&#xa;   image_url : VARCHAR(255) NULL (Nama File)&#xa;   created_at : TIMESTAMP DEFAULT CURRENT_TIMESTAMP&#xa;   updated_at : TIMESTAMP ON UPDATE CURRENT_TIMESTAMP" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=8;overflow=hidden;rotatable=0;" vertex="1" parent="ent_products">
+      <mxGeometry y="60" width="340" height="210" as="geometry" />
+    </mxCell>
+<mxCell id="rel_cat_prod_erd" value="1                                         0..*&#xa;menaungi (ON DELETE CASCADE)" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=ERmany;startArrow=ERone;strokeWidth=2;strokeColor=#D84315;exitX=1;exitY=0.4;exitDx=0;exitDy=0;entryX=0;entryY=0.35;entryDx=0;entryDy=0;" edge="1" parent="1" source="ent_categories" target="ent_products">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+<mxCell id="erd_note" value="&lt;b&gt;PENJELASAN INTEGRITAS DATA &amp;amp; KARDINALITAS RELASI:&lt;/b&gt;&lt;br&gt;&lt;br&gt;1. &lt;b&gt;One-to-Many (1 : N)&lt;/b&gt;: Satu record kategori (misal: &lt;i&gt;Makanan Utama&lt;/i&gt;) menaungi banyak item hidangan &lt;code&gt;products&lt;/code&gt;.&lt;br&gt;2. &lt;b&gt;Foreign Key Constraint&lt;/b&gt;: &lt;code&gt;products.category_id&lt;/code&gt; mereferensikan &lt;code&gt;categories.id&lt;/code&gt;.&lt;br&gt;3. &lt;b&gt;ON DELETE CASCADE&lt;/b&gt;: Jika suatu kategori dihapus, seluruh produk di bawahnya ikut terhapus secara otomatis.&lt;br&gt;4. &lt;b&gt;ON UPDATE CASCADE&lt;/b&gt;: Perubahan id kategori secara otomatis tersinkronisasi ke seluruh foreign key produk.&lt;br&gt;5. &lt;b&gt;Keamanan Akun&lt;/b&gt;: Password pengguna di tabel &lt;code&gt;users&lt;/code&gt; dienkripsi satu arah dengan algoritma hashing &lt;b&gt;Bcrypt (10 salt rounds)&lt;/b&gt;." style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#FFFDE7;strokeColor=#FBC02D;fontColor=#37474F;align=left;verticalAlign=top;spacingLeft=14;spacingTop=10;spacingRight=10;" vertex="1" parent="1">
+      <mxGeometry x="180" y="420" width="880" height="150" as="geometry" />
+    </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

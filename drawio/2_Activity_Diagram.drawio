@@ -1,0 +1,164 @@
+<mxfile host="app.diagrams.net" modified="2026-11-22T03:50:39.455Z" agent="Mozilla/5.0" version="21.0.0" type="device">
+  <diagram id="diagram_activity" name="2. Activity Diagram">
+    <mxGraphModel dx="1400" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1450" pageHeight="1000" background="#FFFFFF" math="0" shadow="0">
+      <root>
+<mxCell id="0" />
+<mxCell id="1" parent="0" />
+<mxCell id="act_title" value="&lt;b&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;ACTIVITY DIAGRAM - ALUR PROSES OPERASIONAL UTAMA&lt;/font&gt;&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 12px; color: #546E7A;&quot;&gt;A: Autentikasi Login | B: Tambah Menu &amp;amp; Upload Foto | C: Hapus Menu dengan Konfirmasi&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+      <mxGeometry x="400" y="20" width="650" height="40" as="geometry" />
+    </mxCell>
+<mxCell id="secA" value="&lt;b&gt;A. Alur Autentikasi Login Pengguna&lt;/b&gt;" style="swimlane;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#4CAF50;fontColor=#1B5E20;startSize=30;rounded=1;collapsible=0;" vertex="1" parent="1">
+      <mxGeometry x="40" y="80" width="400" height="880" as="geometry" />
+    </mxCell>
+<mxCell id="start_login" value="" style="ellipse;html=1;shape=startState;fillColor=#2E7D32;strokeColor=#1B5E20;" vertex="1" parent="secA">
+      <mxGeometry x="185" y="45" width="30" height="30" as="geometry" />
+    </mxCell>
+<mxCell id="actA_1" value="Buka Aplikasi Mobile&lt;br&gt;Dapoer Berkah" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4CAF50;arcSize=20;" vertex="1" parent="secA">
+      <mxGeometry x="120" y="100" width="160" height="40" as="geometry" />
+    </mxCell>
+<mxCell id="actA_dec1" value="Token Valid di&lt;br&gt;SharedPreferences?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF9C4;strokeColor=#FBC02D;" vertex="1" parent="secA">
+      <mxGeometry x="125" y="165" width="150" height="60" as="geometry" />
+    </mxCell>
+<mxCell id="actA_2" value="Tampilkan Halaman Login&lt;br&gt;&amp;amp; Input Email, Password" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4CAF50;arcSize=20;" vertex="1" parent="secA">
+      <mxGeometry x="120" y="255" width="160" height="45" as="geometry" />
+    </mxCell>
+<mxCell id="actA_dec2" value="Format Input&lt;br&gt;Valid &amp;amp; Lengkap?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF9C4;strokeColor=#FBC02D;" vertex="1" parent="secA">
+      <mxGeometry x="130" y="330" width="140" height="55" as="geometry" />
+    </mxCell>
+<mxCell id="actA_3" value="Kirim POST /api/auth/login&lt;br&gt;ke Server Backend" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4CAF50;arcSize=20;" vertex="1" parent="secA">
+      <mxGeometry x="120" y="415" width="160" height="45" as="geometry" />
+    </mxCell>
+<mxCell id="actA_dec3" value="Email Ada di DB &amp;amp;&lt;br&gt;Bcrypt Compare Match?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF9C4;strokeColor=#FBC02D;" vertex="1" parent="secA">
+      <mxGeometry x="115" y="490" width="170" height="60" as="geometry" />
+    </mxCell>
+<mxCell id="actA_err" value="Respon HTTP 401&lt;br&gt;Tampilkan SnackBar Error" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFCDD2;strokeColor=#E53935;arcSize=20;" vertex="1" parent="secA">
+      <mxGeometry x="10" y="495" width="90" height="50" as="geometry" />
+    </mxCell>
+<mxCell id="actA_4" value="Backend Buat Token JWT&lt;br&gt;&amp;amp; Kirim HTTP 200 OK" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4CAF50;arcSize=20;" vertex="1" parent="secA">
+      <mxGeometry x="120" y="585" width="160" height="45" as="geometry" />
+    </mxCell>
+<mxCell id="actA_5" value="Simpan Token JWT di&lt;br&gt;SharedPreferences" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4CAF50;arcSize=20;" vertex="1" parent="secA">
+      <mxGeometry x="120" y="660" width="160" height="45" as="geometry" />
+    </mxCell>
+<mxCell id="actA_dash" value="Buka Halaman Utama&lt;br&gt;Home Dashboard" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#2E7D32;arcSize=20;fontStyle=1;" vertex="1" parent="secA">
+      <mxGeometry x="120" y="740" width="160" height="45" as="geometry" />
+    </mxCell>
+<mxCell id="end_login" value="" style="ellipse;html=1;shape=endState;fillColor=#D32F2F;strokeColor=#B71C1C;" vertex="1" parent="secA">
+      <mxGeometry x="185" y="820" width="30" height="30" as="geometry" />
+    </mxCell>
+<mxCell id="c_a1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secA" source="start_login" target="actA_1"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c_a2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secA" source="actA_1" target="actA_dec1"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c_a3_yes" value="Ya" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="secA" source="actA_dec1" target="actA_dash"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="340" y="195"/><mxPoint x="340" y="763"/></Array></mxGeometry></mxCell>
+<mxCell id="c_a3_no" value="Tidak" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secA" source="actA_dec1" target="actA_2"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c_a4" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secA" source="actA_2" target="actA_dec2"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c_a5" value="Ya" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secA" source="actA_dec2" target="actA_3"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c_a6" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secA" source="actA_3" target="actA_dec3"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c_a7_no" value="Gagal" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secA" source="actA_dec3" target="actA_err"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c_a7_errloop" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="secA" source="actA_err" target="actA_2"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="55" y="278"/></Array></mxGeometry></mxCell>
+<mxCell id="c_a7_yes" value="Sukses" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secA" source="actA_dec3" target="actA_4"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c_a8" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secA" source="actA_4" target="actA_5"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c_a9" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secA" source="actA_5" target="actA_dash"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c_a10" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secA" source="actA_dash" target="end_login"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="secB" value="&lt;b&gt;B. Alur Tambah Menu Baru &amp;amp; Upload Foto (Role Admin)&lt;/b&gt;" style="swimlane;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#FF9800;fontColor=#E65100;startSize=30;rounded=1;collapsible=0;" vertex="1" parent="1">
+      <mxGeometry x="470" y="80" width="480" height="880" as="geometry" />
+    </mxCell>
+<mxCell id="start_add" value="" style="ellipse;html=1;shape=startState;fillColor=#2E7D32;strokeColor=#1B5E20;" vertex="1" parent="secB">
+      <mxGeometry x="225" y="45" width="30" height="30" as="geometry" />
+    </mxCell>
+<mxCell id="actB_1" value="Admin Tekan '+' Buka Form Tambah Menu" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FF9800;arcSize=20;" vertex="1" parent="secB">
+      <mxGeometry x="145" y="95" width="190" height="40" as="geometry" />
+    </mxCell>
+<mxCell id="actB_2" value="Input Kategori, Nama, Harga, Stok &amp;amp;&lt;br&gt;Pilih Gambar Kamera/Galeri" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FF9800;arcSize=20;" vertex="1" parent="secB">
+      <mxGeometry x="135" y="160" width="210" height="45" as="geometry" />
+    </mxCell>
+<mxCell id="actB_dec1" value="Input Lengkap &amp;amp;&lt;br&gt;Harga &amp;gt; 0, Stok &amp;gt;= 0?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF9C4;strokeColor=#FBC02D;" vertex="1" parent="secB">
+      <mxGeometry x="160" y="235" width="160" height="55" as="geometry" />
+    </mxCell>
+<mxCell id="actB_3" value="Kirim Multipart/form-data ke&lt;br&gt;POST /api/products (Bearer JWT)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FF9800;arcSize=20;" vertex="1" parent="secB">
+      <mxGeometry x="140" y="320" width="200" height="45" as="geometry" />
+    </mxCell>
+<mxCell id="actB_dec2" value="Token Valid &amp;amp;&lt;br&gt;Role == 'admin'?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF9C4;strokeColor=#FBC02D;" vertex="1" parent="secB">
+      <mxGeometry x="165" y="395" width="150" height="55" as="geometry" />
+    </mxCell>
+<mxCell id="actB_errRole" value="HTTP 403 Forbidden&lt;br&gt;Akses Ditolak" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFCDD2;strokeColor=#E53935;arcSize=20;" vertex="1" parent="secB">
+      <mxGeometry x="15" y="400" width="110" height="45" as="geometry" />
+    </mxCell>
+<mxCell id="actB_4" value="Multer: Simpan File Foto ke&lt;br&gt;Folder Server /uploads/" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FF9800;arcSize=20;" vertex="1" parent="secB">
+      <mxGeometry x="145" y="480" width="190" height="45" as="geometry" />
+    </mxCell>
+<mxCell id="actB_5" value="Eksekusi SQL Query:&lt;br&gt;INSERT INTO products ..." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FF9800;arcSize=20;" vertex="1" parent="secB">
+      <mxGeometry x="145" y="555" width="190" height="45" as="geometry" />
+    </mxCell>
+<mxCell id="actB_6" value="Kirim Respon HTTP 201 Created&lt;br&gt;beserta Object Produk" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FF9800;arcSize=20;" vertex="1" parent="secB">
+      <mxGeometry x="145" y="630" width="190" height="45" as="geometry" />
+    </mxCell>
+<mxCell id="actB_7" value="Mobile: Tampilkan SnackBar Sukses&lt;br&gt;&amp;amp; Refresh Daftar Katalog Menu" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#2E7D32;arcSize=20;fontStyle=1;" vertex="1" parent="secB">
+      <mxGeometry x="135" y="705" width="210" height="50" as="geometry" />
+    </mxCell>
+<mxCell id="end_add" value="" style="ellipse;html=1;shape=endState;fillColor=#D32F2F;strokeColor=#B71C1C;" vertex="1" parent="secB">
+      <mxGeometry x="225" y="800" width="30" height="30" as="geometry" />
+    </mxCell>
+<mxCell id="c_b1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secB" source="start_add" target="actB_1"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c_b2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secB" source="actB_1" target="actB_2"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c_b3" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secB" source="actB_2" target="actB_dec1"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c_b4_yes" value="Ya" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secB" source="actB_dec1" target="actB_3"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c_b4_no" value="Tidak" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="secB" source="actB_dec1" target="actB_2"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="380" y="263"/><mxPoint x="380" y="183"/></Array></mxGeometry></mxCell>
+<mxCell id="c_b5" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secB" source="actB_3" target="actB_dec2"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c_b6_no" value="Bukan Admin" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secB" source="actB_dec2" target="actB_errRole"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c_b6_errToExit" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="secB" source="actB_errRole" target="end_add"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="70" y="815"/></Array></mxGeometry></mxCell>
+<mxCell id="c_b6_yes" value="Admin" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secB" source="actB_dec2" target="actB_4"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c_b7" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secB" source="actB_4" target="actB_5"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c_b8" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secB" source="actB_5" target="actB_6"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c_b9" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secB" source="actB_6" target="actB_7"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c_b10" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secB" source="actB_7" target="end_add"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="secC" value="&lt;b&gt;C. Alur Hapus Menu dengan Konfirmasi Pengguna&lt;/b&gt;" style="swimlane;whiteSpace=wrap;html=1;fillColor=#FFEBEE;strokeColor=#E53935;fontColor=#B71C1C;startSize=30;rounded=1;collapsible=0;" vertex="1" parent="1">
+      <mxGeometry x="980" y="80" width="420" height="880" as="geometry" />
+    </mxCell>
+<mxCell id="start_del" value="" style="ellipse;html=1;shape=startState;fillColor=#2E7D32;strokeColor=#1B5E20;" vertex="1" parent="secC">
+      <mxGeometry x="195" y="45" width="30" height="30" as="geometry" />
+    </mxCell>
+<mxCell id="actC_1" value="Admin Buka Halaman Detail Menu&lt;br&gt;&amp;amp; Tekan Tombol 'Hapus Menu'" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#E53935;arcSize=20;" vertex="1" parent="secC">
+      <mxGeometry x="110" y="100" width="200" height="45" as="geometry" />
+    </mxCell>
+<mxCell id="actC_2" value="Tampilkan Modal AlertDialog:&lt;br&gt;'Yakin ingin menghapus menu ini?'" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#E53935;arcSize=20;" vertex="1" parent="secC">
+      <mxGeometry x="110" y="180" width="200" height="45" as="geometry" />
+    </mxCell>
+<mxCell id="actC_dec1" value="Pengguna Pilih&lt;br&gt;Hapus / Batal?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF9C4;strokeColor=#FBC02D;" vertex="1" parent="secC">
+      <mxGeometry x="140" y="260" width="140" height="55" as="geometry" />
+    </mxCell>
+<mxCell id="actC_cancel" value="Tutup Dialog &amp;amp;&lt;br&gt;Batalkan Operasi" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ECEFF1;strokeColor=#78909C;arcSize=20;" vertex="1" parent="secC">
+      <mxGeometry x="15" y="265" width="100" height="45" as="geometry" />
+    </mxCell>
+<mxCell id="actC_3" value="Kirim DELETE /api/products/:id&lt;br&gt;dengan Bearer JWT Token" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#E53935;arcSize=20;" vertex="1" parent="secC">
+      <mxGeometry x="110" y="355" width="200" height="45" as="geometry" />
+    </mxCell>
+<mxCell id="actC_4" value="Backend: Cek Foto Fisik &amp;amp;&lt;br&gt;fs.unlinkSync() Gambar di /uploads" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#E53935;arcSize=20;" vertex="1" parent="secC">
+      <mxGeometry x="105" y="440" width="210" height="45" as="geometry" />
+    </mxCell>
+<mxCell id="actC_5" value="Eksekusi SQL Query:&lt;br&gt;DELETE FROM products WHERE id=?" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#E53935;arcSize=20;" vertex="1" parent="secC">
+      <mxGeometry x="110" y="525" width="200" height="45" as="geometry" />
+    </mxCell>
+<mxCell id="actC_6" value="Kirim Respon HTTP 200 OK&lt;br&gt;Status Sukses Dihapus" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#E53935;arcSize=20;" vertex="1" parent="secC">
+      <mxGeometry x="110" y="610" width="200" height="45" as="geometry" />
+    </mxCell>
+<mxCell id="actC_7" value="Mobile: Hapus Item dari State List,&lt;br&gt;Kembali ke Katalog, Tampil SnackBar" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#2E7D32;arcSize=20;fontStyle=1;" vertex="1" parent="secC">
+      <mxGeometry x="100" y="695" width="220" height="50" as="geometry" />
+    </mxCell>
+<mxCell id="end_del" value="" style="ellipse;html=1;shape=endState;fillColor=#D32F2F;strokeColor=#B71C1C;" vertex="1" parent="secC">
+      <mxGeometry x="195" y="795" width="30" height="30" as="geometry" />
+    </mxCell>
+<mxCell id="c_c1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secC" source="start_del" target="actC_1"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c_c2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secC" source="actC_1" target="actC_2"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c_c3" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secC" source="actC_2" target="actC_dec1"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c_c4_batal" value="Batal" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secC" source="actC_dec1" target="actC_cancel"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c_c4_cancelToEnd" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="secC" source="actC_cancel" target="end_del"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="65" y="810"/></Array></mxGeometry></mxCell>
+<mxCell id="c_c4_hapus" value="Ya, Hapus" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secC" source="actC_dec1" target="actC_3"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c_c5" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secC" source="actC_3" target="actC_4"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c_c6" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secC" source="actC_4" target="actC_5"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c_c7" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secC" source="actC_5" target="actC_6"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c_c8" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secC" source="actC_6" target="actC_7"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c_c9" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;" edge="1" parent="secC" source="actC_7" target="end_del"><mxGeometry relative="1" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
