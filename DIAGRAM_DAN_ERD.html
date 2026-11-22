@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diagram Sistem & ERD - UMKM Dapoer Berkah</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'default',
+      securityLevel: 'loose',
+      fontFamily: 'Inter, system-ui, sans-serif'
+    });
+  </script>
+  <style>
+    :root {
+      --primary: #E65100;
+      --primary-dark: #BF360C;
+      --bg: #F4F6F8;
+      --card-bg: #FFFFFF;
+      --text: #263238;
+      --text-muted: #546E7A;
+      --border: #CFD8DC;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 24px;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      padding: 32px;
+      border-radius: 16px;
+      margin-bottom: 32px;
+      box-shadow: 0 8px 24px rgba(230, 81, 0, 0.25);
+    }
+    header h1 {
+      font-size: 26px;
+      margin-bottom: 8px;
+    }
+    header p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+    .badge-bar {
+      margin-top: 16px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .badge {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 32px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+      border: 1px solid var(--border);
+    }
+    .card-header {
+      border-bottom: 2px solid #FFE0B2;
+      padding-bottom: 12px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .card-header h2 {
+      color: var(--primary-dark);
+      font-size: 20px;
+    }
+    .card-desc {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    .diagram-box {
+      background: #FAFAFA;
+      border: 1px solid #ECEFF1;
+      border-radius: 12px;
+      padding: 20px;
+      overflow-x: auto;
+      text-align: center;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      font-size: 13px;
+    }
+    table th, table td {
+      border: 1px solid var(--border);
+      padding: 10px 14px;
+      text-align: left;
+    }
+    table th {
+      background-color: #ECEFF1;
+      font-weight: bold;
+      color: #37474F;
+    }
+    table tr:nth-child(even) {
+      background-color: #F8FAFB;
+    }
+    .print-btn {
+      background: white;
+      color: var(--primary-dark);
+      border: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      transition: all 0.2s;
+    }
+    .print-btn:hover {
+      background: #FFE0B2;
+    }
+    @media print {
+      body { background: white; padding: 0; }
+      header { box-shadow: none; border-radius: 0; }
+      .card { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
+      .print-btn { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+      <div>
+        <h1>DOKUMENTASI VISUAL DIAGRAM SISTEM &amp; ERD</h1>
+        <p>Sistem Operasional &amp; Pelayanan UMKM Kuliner "Dapoer Berkah"</p>
+        <p style="margin-top: 4px; font-size: 13px;">Penyusun: <strong>Alif Frizki Pratama</strong> (KOKE - RPL)</p>
+      </div>
+      <button class="print-btn" onclick="window.print()">🖨️ Cetak / Simpan PDF</button>
+    </div>
+    <div class="badge-bar">
+      <span class="badge">1. Use Case Diagram</span>
+      <span class="badge">2. Activity Diagrams (3 Alur)</span>
+      <span class="badge">3. Class Diagram</span>
+      <span class="badge">4. Entity Relationship Diagram (ERD)</span>
+      <span class="badge">5. Table Schema</span>
+    </div>
+  </header>
+
+  <!-- ================= 1. USE CASE DIAGRAM ================= -->
+  <section class="card">
+    <div class="card-header">
+      <h2>1. Use Case Diagram</h2>
+      <span style="font-size: 12px; color: var(--text-muted);">Bab IV Sub-Bab 4.1</span>
+    </div>
+    <p class="card-desc">
+      Menggambarkan interaksi menyeluruh antara dua aktor pengguna (<strong>Admin</strong> dan <strong>Kasir</strong>) dengan layanan sistem operasional Dapoer Berkah.
+    </p>
+    <div class="diagram-box">
+      <pre class="mermaid">
+flowchart LR
+    Admin(["👤 Aktor: ADMIN<br/>(Pemilik / Manajer)"])
+    Kasir(["👤 Aktor: KASIR<br/>(Pelayan / Front Office)"])
+
+    subgraph "SISTEM OPERASIONAL UMKM DAPOER BERKAH"
+        UC1((UC-01: Registrasi Akun))
+        UC2((UC-02: Login &amp; Autentikasi JWT))
+        UC3((UC-03: Lihat Dashboard &amp; Ringkasan Stok))
+        UC4((UC-04: Lihat Katalog Menu &amp; Detail))
+        UC5((UC-05: Cari &amp; Filter Menu))
+        UC6((UC-06: Tambah Menu &amp; Upload Foto))
+        UC7((UC-07: Edit Menu &amp; Ganti Foto))
+        UC8((UC-08: Hapus Menu &amp; File Fisik))
+        UC9((UC-09: Kelola Kategori CRUD))
+        UC10((UC-10: Logout Akun))
+    end
+
+    %% Relasi Aktor Admin
+    Admin --> UC1
+    Admin --> UC2
+    Admin --> UC3
+    Admin --> UC4
+    Admin --> UC5
+    Admin --> UC6
+    Admin --> UC7
+    Admin --> UC8
+    Admin --> UC9
+    Admin --> UC10
+
+    %% Relasi Aktor Kasir (Terbatas)
+    Kasir --> UC1
+    Kasir --> UC2
+    Kasir --> UC3
+    Kasir --> UC4
+    Kasir --> UC5
+    Kasir --> UC10
+
+    style Admin fill:#FFE0B2,stroke:#E65100,stroke-width:2px;
+    style Kasir fill:#C8E6C9,stroke:#2E7D32,stroke-width:2px;
+    style UC6 fill:#FFECB3,stroke:#FFA000;
+    style UC7 fill:#FFECB3,stroke:#FFA000;
+    style UC8 fill:#FFCDD2,stroke:#D32F2F;
+    style UC9 fill:#FFECB3,stroke:#FFA000;
+      </pre>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Kode</th>
+          <th>Nama Use Case</th>
+          <th>Aktor Terlibat</th>
+          <th>Deskripsi Singkat</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>UC-01</strong></td>
+          <td>Registrasi Akun</td>
+          <td>Admin, Kasir</td>
+          <td>Mendaftarkan akun baru ke sistem dengan role admin atau kasir. Password di-hash menggunakan bcrypt.</td>
+        </tr>
+        <tr>
+          <td><strong>UC-02</strong></td>
+          <td>Login &amp; JWT Auth</td>
+          <td>Admin, Kasir</td>
+          <td>Memvalidasi kredensial email &amp; password dan menerbitkan JSON Web Token (JWT).</td>
+        </tr>
+        <tr>
+          <td><strong>UC-03</strong></td>
+          <td>Lihat Dashboard</td>
+          <td>Admin, Kasir</td>
+          <td>Menampilkan ringkasan jumlah produk, kategori, dan alert stok menipis (stok &le; 5).</td>
+        </tr>
+        <tr>
+          <td><strong>UC-04</strong></td>
+          <td>Katalog &amp; Detail Menu</td>
+          <td>Admin, Kasir</td>
+          <td>Menampilkan daftar kartu menu makanan/minuman dengan harga Rupiah, thumbnail foto, dan ketersediaan stok.</td>
+        </tr>
+        <tr>
+          <td><strong>UC-05</strong></td>
+          <td>Cari &amp; Filter Menu</td>
+          <td>Admin, Kasir</td>
+          <td>Menyaring menu berdasarkan pilihan chip kategori atau pencarian teks realtime.</td>
+        </tr>
+        <tr>
+          <td><strong>UC-06 s.d UC-08</strong></td>
+          <td>CRUD Menu &amp; Foto</td>
+          <td>Khusus Admin</td>
+          <td>Menambah, mengedit, dan menghapus menu kuliner terintegrasi dengan upload foto dari kamera/galeri.</td>
+        </tr>
+        <tr>
+          <td><strong>UC-09</strong></td>
+          <td>Kelola Kategori</td>
+          <td>Khusus Admin</td>
+          <td>Menambah, mengedit, dan menghapus master kategori hidangan (Makanan Utama, Minuman, Snack).</td>
+        </tr>
+        <tr>
+          <td><strong>UC-10</strong></td>
+          <td>Logout Akun</td>
+          <td>Admin, Kasir</td>
+          <td>Menghapus token autentikasi lokal dan mengembalikan sesi ke halaman Login.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ================= 2. ACTIVITY DIAGRAMS ================= -->
+  <section class="card">
+    <div class="card-header">
+      <h2>2. Activity Diagrams (Alur Proses Sistem)</h2>
+      <span style="font-size: 12px; color: var(--text-muted);">Bab IV Sub-Bab 4.1</span>
+    </div>
+
+    <h3 style="margin: 16px 0 8px 0; color: #E65100; font-size: 16px;">A. Activity Diagram: Alur Autentikasi Login Pengguna</h3>
+    <p class="card-desc">Menggambarkan alur validasi pengguna mulai dari input kredensial, verifikasi hash bcrypt di backend, hingga pembuatan token JWT.</p>
+    <div class="diagram-box">
+      <pre class="mermaid">
+flowchart TD
+    StartLogin([Mulai]) --> BukaApp[Buka Aplikasi Mobile Dapoer Berkah]
+    BukaApp --> CekToken{Pemeriksaan Token di SharedPreferences}
+    CekToken -- Token Ada & Valid --> BukaDashboard[Langsung Masuk ke Home Dashboard]
+    CekToken -- Token Tidak Ada / Expired --> FormLogin[Tampilkan Halaman Login]
+    
+    FormLogin --> InputKredensial[Pengguna Memasukkan Email & Password]
+    InputKredensial --> KlikMasuk[Klik Tombol 'Masuk']
+    KlikMasuk --> ValidasiClient{Validasi Format Email & Password}
+    
+    ValidasiClient -- Tidak Lengkap --> AlertClient[Tampilkan Pesan Peringatan Input]
+    AlertClient --> FormLogin
+    
+    ValidasiClient -- Valid --> KirimRequest[Kirim POST /api/auth/login ke Backend]
+    KirimRequest --> BackendQuery[Backend Mencari Pengguna Berdasarkan Email]
+    
+    BackendQuery --> CekUserAda{User Ditemukan di DB?}
+    CekUserAda -- Tidak --> Return401[Kembalikan HTTP 401 Unauthorized]
+    Return401 --> SnackBarError[Tampilkan SnackBar: Email atau password tidak valid]
+    SnackBarError --> FormLogin
+    
+    CekUserAda -- Ya --> VerifikasiHash{Bcrypt Compare Password}
+    VerifikasiHash -- Hash Tidak Cocok --> Return401
+    
+    VerifikasiHash -- Hash Cocok --> TerbitkanJWT[Generate JWT Token & Payload User Role]
+    TerbitkanJWT --> Return200[Kembalikan HTTP 200 OK + Token + Profil]
+    Return200 --> SimpanToken[Aplikasi Menyimpan Token ke SharedPreferences]
+    SimpanToken --> BukaDashboard
+    BukaDashboard --> EndLogin([Selesai])
+      </pre>
+    </div>
+
+    <h3 style="margin: 32px 0 8px 0; color: #E65100; font-size: 16px;">B. Activity Diagram: Alur Tambah Menu Baru &amp; Upload Foto (Khusus Role Admin)</h3>
+    <p class="card-desc">Menggambarkan proses penambahan produk lengkap dengan pemeriksaan otorisasi role di backend dan pengunggahan file fisik gambar.</p>
+    <div class="diagram-box">
+      <pre class="mermaid">
+flowchart TD
+    StartAdd([Mulai]) --> NavigasiForm[Admin Membuka Form Tambah Menu Baru]
+    NavigasiForm --> PilihKategori[Pilih Kategori Menu dari Dropdown]
+    PilihKategori --> IsiForm[Isi Nama, Harga, Stok, dan Deskripsi Menu]
+    IsiForm --> KetukFoto[Ketuk Kotak Unggah Foto]
+    KetukFoto --> ModalPicker[Muncul Dialog: Kamera atau Galeri Foto]
+    ModalPicker --> AmbilGambar[Pilih Gambar Menggunakan image_picker]
+    AmbilGambar --> PreviewGambar[Pratinjau Foto Ditampilkan di Form]
+    
+    PreviewGambar --> KlikSimpan[Klik Tombol 'Simpan Menu Baru']
+    KlikSimpan --> ValidasiForm{Validasi Form Lengkap?}
+    ValidasiForm -- Belum Lengkap --> PesanErrorForm[Tampilkan Peringatan Field Wajib]
+    PesanErrorForm --> IsiForm
+    
+    ValidasiForm -- Lengkap --> KirimMultipart[Kirim Request Multipart/Form-Data ke Backend + Bearer JWT]
+    KirimMultipart --> AuthCheck{authMiddleware: Token Valid?}
+    AuthCheck -- Tidak --> Respon401[HTTP 401: Akses Ditolak]
+    
+    AuthCheck -- Ya --> RoleCheck{roleMiddleware: Role == 'admin'?}
+    RoleCheck -- Bukan Admin --> Respon403[HTTP 403: Role kasir ditolak]
+    
+    RoleCheck -- Admin --> MulterUpload{uploadMiddleware: Validasi File}
+    MulterUpload -- File Bukan Gambar / >20MB --> Respon400[HTTP 400: Format file tidak didukung]
+    
+    MulterUpload -- Valid --> SimpanFisik[Simpan File Foto ke Server Folder /uploads/]
+    SimpanFisik --> InsertDB[INSERT INTO products VALUES (...)]
+    InsertDB --> Respon201[HTTP 201 Created + Data Produk Lengkap]
+    
+    Respon201 --> SnackBarSukses[Tampilkan SnackBar: Menu baru berhasil ditambahkan]
+    SnackBarSukses --> RefreshKatalog[Katalog Produk Di-refresh Otomatis]
+    RefreshKatalog --> EndAdd([Selesai])
+    
+    Respon401 --> EndAdd
+    Respon403 --> EndAdd
+    Respon400 --> FormTambahUlang[Kembali ke Form dengan Pesan Error]
+    FormTambahUlang --> EndAdd
+      </pre>
+    </div>
+
+    <h3 style="margin: 32px 0 8px 0; color: #E65100; font-size: 16px;">C. Activity Diagram: Alur Hapus Menu dengan Konfirmasi Pengguna</h3>
+    <p class="card-desc">Menggambarkan alur perlindungan data melalui dialog konfirmasi sebelum record produk di database dan file foto fisik dihapus.</p>
+    <div class="diagram-box">
+      <pre class="mermaid">
+flowchart TD
+    StartDel([Mulai]) --> BukaDetail[Admin Membuka Halaman Detail Menu]
+    BukaDetail --> KlikHapus[Klik Tombol 'Hapus Menu']
+    KlikHapus --> TampilDialog[Muncul AlertDialog Konfirmasi: 'Apakah Anda yakin ingin menghapus menu ini?']
+    TampilDialog --> PilihanUser{Keputusan Pengguna}
+    
+    PilihanUser -- Batal --> TutupDialog[Tutup Dialog & Tidak Ada Perubahan Data]
+    TutupDialog --> EndDel([Selesai])
+    
+    PilihanUser -- Hapus --> KirimDelete[Kirim DELETE /api/products/:id + Token JWT]
+    KirimDelete --> CekIzinRole{Pemeriksaan Role Admin}
+    CekIzinRole -- Ditolak --> Respon403Del[HTTP 403 Forbidden]
+    
+    CekIzinRole -- Disetujui --> CekFotoAda{Produk Memiliki Foto Fisik?}
+    CekFotoAda -- Ada --> HapusFile[fs.unlinkSync: Hapus File Gambar dari /uploads/]
+    CekFotoAda -- Tidak Ada --> EksekusiQuery
+    HapusFile --> EksekusiQuery[DELETE FROM products WHERE id = ?]
+    
+    EksekusiQuery --> Respon200Del[HTTP 200 OK: Produk berhasil dihapus]
+    Respon200Del --> PopDetail[Tutup Halaman Detail & Kembali ke Katalog]
+    PopDetail --> UpdateState[ProductProvider Menghapus Item dari State List]
+    UpdateState --> SnackBarDel[Tampilkan SnackBar Berhasil Dihapus]
+    SnackBarDel --> EndDel
+      </pre>
+    </div>
+  </section>
+
+  <!-- ================= 3. CLASS DIAGRAM ================= -->
+  <section class="card">
+    <div class="card-header">
+      <h2>3. Class Diagram</h2>
+      <span style="font-size: 12px; color: var(--text-muted);">Bab IV Sub-Bab 4.1</span>
+    </div>
+    <p class="card-desc">
+      Menjelaskan struktur kelas entitas data, lapisan service komunikasi HTTP, dan pengelola state (Provider) pada arsitektur perangkat lunak.
+    </p>
+    <div class="diagram-box">
+      <pre class="mermaid">
+classDiagram
+    direction TB
+
+    class UserModel {
+        +int id
+        +String name
+        +String email
+        +String role
+        +bool isAdmin
+        +bool isKasir
+        +UserModel(id, name, email, role)
+        +fromJson(Map json) UserModel
+        +toJson() Map
+    }
+
+    class CategoryModel {
+        +int id
+        +String name
+        +String description
+        +int totalProducts
+        +String createdAt
+        +String updatedAt
+        +CategoryModel(id, name, description, totalProducts)
+        +fromJson(Map json) CategoryModel
+        +toJson() Map
+    }
+
+    class ProductModel {
+        +int id
+        +int categoryId
+        +String categoryName
+        +String name
+        +String description
+        +double price
+        +int stock
+        +String imageUrl
+        +String imageFullUrl
+        +String formattedPrice
+        +ProductModel(id, categoryId, name, price, stock, ...)
+        +fromJson(Map json) ProductModel
+        +toJson() Map
+    }
+
+    class ApiService {
+        +String tokenKey$
+        +saveToken(String token)$ Future
+        +getToken()$ Future
+        +removeToken()$ Future
+        +login(String email, String password)$ Future
+        +register(String name, String email, String password, String role)$ Future
+        +getProfile()$ Future
+        +getCategories(String search)$ Future
+        +createCategory(String name, String desc)$ Future
+        +updateCategory(int id, String name, String desc)$ Future
+        +deleteCategory(int id)$ Future
+        +getProducts(int catId, String search)$ Future
+        +getProductById(int id)$ Future
+        +createProduct(data, XFile imageFile)$ Future
+        +updateProduct(int id, data, XFile imageFile)$ Future
+        +deleteProduct(int id)$ Future
+    }
+
+    class AuthProvider {
+        -UserModel user
+        -bool isLoading
+        -String errorMessage
+        +UserModel get user
+        +bool get isAuthenticated
+        +bool get isAdmin
+        +checkAuthStatus() Future
+        +login(String email, String password) Future
+        +register(data) Future
+        +logout() Future
+    }
+
+    class CategoryProvider {
+        -List~CategoryModel~ categories
+        -bool isLoading
+        -String errorMessage
+        +List~CategoryModel~ get categories
+        +fetchCategories(String search) Future
+        +addCategory(String name, String desc) Future
+        +updateCategory(int id, String name, String desc) Future
+        +deleteCategory(int id) Future
+    }
+
+    class ProductProvider {
+        -List~ProductModel~ products
+        -bool isLoading
+        -String errorMessage
+        -int selectedCategoryId
+        -String searchQuery
+        +List~ProductModel~ get products
+        +setCategoryFilter(int id) void
+        +setSearchQuery(String q) void
+        +fetchProducts() Future
+        +addProduct(data, XFile img) Future
+        +updateProduct(int id, data, XFile img) Future
+        +deleteProduct(int id) Future
+    }
+
+    %% Relasi Asosiasi & Ketergantungan
+    CategoryModel "1" *-- "0..*" ProductModel : menaungi (Kategori memiliki banyak Produk)
+    AuthProvider --> UserModel : menyimpan state pengguna
+    CategoryProvider --> CategoryModel : mengelola list kategori
+    ProductProvider --> ProductModel : mengelola list produk
+    AuthProvider ..> ApiService : memanggil REST API
+    CategoryProvider ..> ApiService : memanggil REST API
+    ProductProvider ..> ApiService : memanggil REST API
+      </pre>
+    </div>
+  </section>
+
+  <!-- ================= 4. ERD ================= -->
+  <section class="card">
+    <div class="card-header">
+      <h2>4. Entity Relationship Diagram (ERD)</h2>
+      <span style="font-size: 12px; color: var(--text-muted);">Bab IV Sub-Bab 4.2</span>
+    </div>
+    <p class="card-desc">
+      Menggambarkan skema basis data relasional MySQL pada Aiven Cloud, mencakup tabel, tipe data, atribut, Primary Key (PK), Foreign Key (FK), dan kardinalitas relasi.
+    </p>
+    <div class="diagram-box">
+      <pre class="mermaid">
+erDiagram
+    users {
+        int id PK "AUTO_INCREMENT, Not Null"
+        varchar name "VARCHAR(100), Not Null"
+        varchar email UK "VARCHAR(100), Not Null, Unique"
+        varchar password "VARCHAR(255), Not Null, Bcrypt Hash"
+        enum role "ENUM('admin', 'kasir'), Default 'kasir'"
+        timestamp created_at "TIMESTAMP, Current Timestamp"
+        timestamp updated_at "TIMESTAMP, On Update Current Timestamp"
+    }
+
+    categories {
+        int id PK "AUTO_INCREMENT, Not Null"
+        varchar name "VARCHAR(100), Not Null"
+        text description "TEXT, Nullable"
+        timestamp created_at "TIMESTAMP, Current Timestamp"
+        timestamp updated_at "TIMESTAMP, On Update Current Timestamp"
+    }
+
+    products {
+        int id PK "AUTO_INCREMENT, Not Null"
+        int category_id FK "INT, Not Null, Foreign Key -> categories(id)"
+        varchar name "VARCHAR(150), Not Null"
+        text description "TEXT, Nullable"
+        decimal price "DECIMAL(12,2), Default 0.00"
+        int stock "INT, Default 0"
+        varchar image_url "VARCHAR(255), Nullable (Nama File Foto)"
+        timestamp created_at "TIMESTAMP, Current Timestamp"
+        timestamp updated_at "TIMESTAMP, On Update Current Timestamp"
+    }
+
+    categories ||--o{ products : "has / menaungi (1 to Many, ON DELETE CASCADE)"
+      </pre>
+    </div>
+    <div style="margin-top: 16px; font-size: 13px; color: var(--text-muted);">
+      <strong>Penjelasan Kardinalitas Relasi:</strong>
+      <ul style="margin-left: 20px; margin-top: 6px;">
+        <li><strong>One-to-Many (1 : N)</strong>: Setiap 1 Kategori (misal: <em>Makanan Utama</em>) dapat memiliki 0 atau banyak Produk hidangan terkait.</li>
+        <li><strong>Foreign Key Constraint</strong>: Kolom <code>products.category_id</code> mereferensikan <code>categories.id</code> dengan aturan <code>ON DELETE CASCADE</code> dan <code>ON UPDATE CASCADE</code>, sehingga integritas relasi antar tabel tetap konsisten.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ================= 5. TABLE SCHEMA ================= -->
+  <section class="card">
+    <div class="card-header">
+      <h2>5. Table Schema (Dokumentasi Struktur Tabel)</h2>
+      <span style="font-size: 12px; color: var(--text-muted);">Bab IV Sub-Bab 4.2</span>
+    </div>
+
+    <h3 style="margin-bottom: 8px; color: #E65100; font-size: 15px;">A. Tabel: <code>users</code></h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Nama Field</th>
+          <th>Tipe Data</th>
+          <th>Null</th>
+          <th>Key</th>
+          <th>Default</th>
+          <th>Keterangan</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>id</code></td>
+          <td>INT(11)</td>
+          <td>NO</td>
+          <td>PRI</td>
+          <td>AUTO_INCREMENT</td>
+          <td>Identifier unik pengguna (Primary Key)</td>
+        </tr>
+        <tr>
+          <td><code>name</code></td>
+          <td>VARCHAR(100)</td>
+          <td>NO</td>
+          <td></td>
+          <td>None</td>
+          <td>Nama lengkap pegawai / pengelola</td>
+        </tr>
+        <tr>
+          <td><code>email</code></td>
+          <td>VARCHAR(100)</td>
+          <td>NO</td>
+          <td>UNI</td>
+          <td>None</td>
+          <td>Email akun unik untuk autentikasi (Unique Key)</td>
+        </tr>
+        <tr>
+          <td><code>password</code></td>
+          <td>VARCHAR(255)</td>
+          <td>NO</td>
+          <td></td>
+          <td>None</td>
+          <td>Kata sandi terenkripsi hash satu arah (bcrypt)</td>
+        </tr>
+        <tr>
+          <td><code>role</code></td>
+          <td>ENUM('admin', 'kasir')</td>
+          <td>NO</td>
+          <td></td>
+          <td>'kasir'</td>
+          <td>Peranan pengguna untuk otorisasi RBAC</td>
+        </tr>
+        <tr>
+          <td><code>created_at</code></td>
+          <td>TIMESTAMP</td>
+          <td>NO</td>
+          <td></td>
+          <td>CURRENT_TIMESTAMP</td>
+          <td>Waktu registrasi akun</td>
+        </tr>
+        <tr>
+          <td><code>updated_at</code></td>
+          <td>TIMESTAMP</td>
+          <td>NO</td>
+          <td></td>
+          <td>CURRENT_TIMESTAMP</td>
+          <td>Waktu terakhir data diperbarui</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 style="margin: 24px 0 8px 0; color: #E65100; font-size: 15px;">B. Tabel: <code>categories</code> (Data Utama 1)</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Nama Field</th>
+          <th>Tipe Data</th>
+          <th>Null</th>
+          <th>Key</th>
+          <th>Default</th>
+          <th>Keterangan</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>id</code></td>
+          <td>INT(11)</td>
+          <td>NO</td>
+          <td>PRI</td>
+          <td>AUTO_INCREMENT</td>
+          <td>Identifier unik kategori menu (Primary Key)</td>
+        </tr>
+        <tr>
+          <td><code>name</code></td>
+          <td>VARCHAR(100)</td>
+          <td>NO</td>
+          <td></td>
+          <td>None</td>
+          <td>Nama label kategori (Makanan Utama, Minuman, Snack)</td>
+        </tr>
+        <tr>
+          <td><code>description</code></td>
+          <td>TEXT</td>
+          <td>YES</td>
+          <td></td>
+          <td>NULL</td>
+          <td>Penjelasan singkat kategori hidangan</td>
+        </tr>
+        <tr>
+          <td><code>created_at</code></td>
+          <td>TIMESTAMP</td>
+          <td>NO</td>
+          <td></td>
+          <td>CURRENT_TIMESTAMP</td>
+          <td>Waktu kategori dibuat</td>
+        </tr>
+        <tr>
+          <td><code>updated_at</code></td>
+          <td>TIMESTAMP</td>
+          <td>NO</td>
+          <td></td>
+          <td>CURRENT_TIMESTAMP</td>
+          <td>Waktu terakhir kategori diperbarui</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 style="margin: 24px 0 8px 0; color: #E65100; font-size: 15px;">C. Tabel: <code>products</code> (Data Utama 2)</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Nama Field</th>
+          <th>Tipe Data</th>
+          <th>Null</th>
+          <th>Key</th>
+          <th>Default</th>
+          <th>Keterangan</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>id</code></td>
+          <td>INT(11)</td>
+          <td>NO</td>
+          <td>PRI</td>
+          <td>AUTO_INCREMENT</td>
+          <td>Identifier unik produk menu (Primary Key)</td>
+        </tr>
+        <tr>
+          <td><code>category_id</code></td>
+          <td>INT(11)</td>
+          <td>NO</td>
+          <td>MUL</td>
+          <td>None</td>
+          <td>Foreign Key ke <code>categories(id)</code> (ON DELETE CASCADE)</td>
+        </tr>
+        <tr>
+          <td><code>name</code></td>
+          <td>VARCHAR(150)</td>
+          <td>NO</td>
+          <td></td>
+          <td>None</td>
+          <td>Nama menu makanan / minuman</td>
+        </tr>
+        <tr>
+          <td><code>description</code></td>
+          <td>TEXT</td>
+          <td>YES</td>
+          <td></td>
+          <td>NULL</td>
+          <td>Deskripsi porsi, rasa, dan bahan</td>
+        </tr>
+        <tr>
+          <td><code>price</code></td>
+          <td>DECIMAL(12,2)</td>
+          <td>NO</td>
+          <td></td>
+          <td>0.00</td>
+          <td>Harga jual produk dalam mata uang Rupiah</td>
+        </tr>
+        <tr>
+          <td><code>stock</code></td>
+          <td>INT(11)</td>
+          <td>NO</td>
+          <td></td>
+          <td>0</td>
+          <td>Kuantitas stok menu yang tersedia</td>
+        </tr>
+        <tr>
+          <td><code>image_url</code></td>
+          <td>VARCHAR(255)</td>
+          <td>YES</td>
+          <td></td>
+          <td>NULL</td>
+          <td>Nama file gambar terupload di media penyimpanan server</td>
+        </tr>
+        <tr>
+          <td><code>created_at</code></td>
+          <td>TIMESTAMP</td>
+          <td>NO</td>
+          <td></td>
+          <td>CURRENT_TIMESTAMP</td>
+          <td>Waktu produk dibuat</td>
+        </tr>
+        <tr>
+          <td><code>updated_at</code></td>
+          <td>TIMESTAMP</td>
+          <td>NO</td>
+          <td></td>
+          <td>CURRENT_TIMESTAMP</td>
+          <td>Waktu terakhir produk diperbarui</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+</div>
+
+</body>
+</html>
