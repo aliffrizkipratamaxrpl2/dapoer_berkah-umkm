@@ -922,9 +922,17 @@ async function createSrsWordDocument() {
   });
 
   const buffer = await Packer.toBuffer(doc);
-  const outputPath = path.join(__dirname, 'DOKUMEN_SRS.docx');
+  const outputPath = path.join(__dirname, 'DOKUMEN_SRS_LENGKAP.docx');
   fs.writeFileSync(outputPath, buffer);
-  console.log('✅ File Microsoft Word DOKUMEN_SRS.docx berhasil diperbarui dengan diagram & tabel lengkap di:', outputPath);
+  console.log('✅ File Microsoft Word DOKUMEN_SRS_LENGKAP.docx berhasil dibuat di:', outputPath);
+  
+  try {
+    const mainPath = path.join(__dirname, 'DOKUMEN_SRS.docx');
+    fs.writeFileSync(mainPath, buffer);
+    console.log('✅ File DOKUMEN_SRS.docx juga berhasil diperbarui!');
+  } catch (err) {
+    console.log('ℹ️ DOKUMEN_SRS.docx sedang dibuka di MS Word, file baru disimpan di DOKUMEN_SRS_LENGKAP.docx');
+  }
 }
 
 createSrsWordDocument().catch((err) => {
