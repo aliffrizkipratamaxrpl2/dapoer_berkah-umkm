@@ -2,7 +2,11 @@
 
 ## SISTEM OPERASIONAL DAN PELAYANAN UMKM KULINER "DAPOER BERKAH"
 **Mata Pelajaran: Konsentrasi Keahlian Rekayasa Perangkat Lunak (KOKE)**  
-**Platform: Backend REST API (Node.js & Express.js) + Database Cloud (Aiven MySQL) + Mobile Client (Flutter)**
+**Penyusun: Alif Frizki Pratama (`aliffrizkipratamaxrpl2`)**  
+**Repositori GitHub: [https://github.com/aliffrizkipratamaxrpl2/dapoer_berkah-umkm](https://github.com/aliffrizkipratamaxrpl2/dapoer_berkah-umkm)**  
+**Live Production URL (Vercel): [https://backend-lipp-indonesia.vercel.app](https://backend-lipp-indonesia.vercel.app)**  
+**Database Cloud: MySQL di Aiven Cloud Engine**  
+**Platform Client: Flutter Mobile & Web Client**
 
 ---
 
@@ -647,9 +651,11 @@ Berdasarkan perancangan, implementasi, dan pengujian yang telah dilaksanakan, da
 ### 5.2 Lampiran
 
 #### 1. Informasi Repositori GitHub & Branching
-- **Branch Utama**: `master` (versi stabil dan siap produksi).
+- **Akun GitHub**: `aliffrizkipratamaxrpl2`
+- **Tautan Repositori**: `https://github.com/aliffrizkipratamaxrpl2/dapoer_berkah-umkm`
+- **Branch Utama**: `main` (versi stabil dan siap produksi).
 - **Branch Fitur**: `feature/deployment-and-srs` (pengembangan dokumen SRS, konfigurasi cloud Aiven, dan Vercel).
-- **Tautan Repositori**: `https://github.com/username/ujilevel-umkm` *(sesuaikan dengan akun GitHub peserta)*.
+- **Live Vercel Production API**: `https://backend-lipp-indonesia.vercel.app`
 
 #### 2. Kredensial Akun Pengujian Sistem
 | Peran (Role) | Email Login | Password Default | Cakupan Wewenang |
@@ -661,4 +667,4 @@ Berdasarkan perancangan, implementasi, dan pengujian yang telah dilaksanakan, da
 - **Tampilan Login**: Form minimalis dilengkapi tombol cepat demo akun (*1-click autofill* Admin & Kasir).
 - **Tampilan Dashboard**: Ringkasan jumlah menu aktif, kategori, produk stok menipis, serta navigasi cepat.
 - **Tampilan Katalog**: Tampilan *grid* dua kolom estetik lengkap dengan thumbnail foto, badge kategori, harga Rupiah, dan status ketersediaan stok.
-- **Tampilan Form Produk**: Dilengkapi fitur *Image Picker* dengan pratinjau interaktif foto dari kamera HP atau file galeri.
+- **Tampilan Form Produk**: Dilengkapi fitur *Image Picker* dengan pratinjau interaktif foto dari kamera HP atau file galeri bebas format hingga 20 MB.
