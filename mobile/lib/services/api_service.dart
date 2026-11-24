@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
@@ -76,24 +77,40 @@ class ApiService {
   // AUTH SERVICES
   // ------------------------------------------------------------------------
   static Future<ApiResponse<Map<String, dynamic>>> login(String email, String password) async {
-    try {
-      final response = await http.post(
-        Uri.parse(ApiConfig.loginUrl),
-        headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
-        body: jsonEncode({'email': email, 'password': password}),
-      );
+    final urlsToTry = [
+      ApiConfig.baseUrl,
+      ...ApiConfig.candidateUrls.where((u) => u != ApiConfig.baseUrl)
+    ];
 
-      final body = jsonDecode(response.body);
-      if (response.statusCode == 200 && body['success'] == true) {
-        final token = body['data']['token'];
-        await saveToken(token);
-        return ApiResponse(success: true, message: body['message'], data: body['data']);
-      } else {
-        return ApiResponse(success: false, message: body['message'] ?? 'Login gagal.');
+    String lastError = '';
+
+    for (final base in urlsToTry) {
+      try {
+        final response = await http.post(
+          Uri.parse('$base/api/auth/login'),
+          headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+          body: jsonEncode({'email': email, 'password': password}),
+        ).timeout(const Duration(seconds: 4));
+
+        final body = jsonDecode(response.body);
+        if (response.statusCode == 200 && body['success'] == true) {
+          ApiConfig.setWorkingBaseUrl(base);
+          final token = body['data']['token'];
+          await saveToken(token);
+          return ApiResponse(success: true, message: body['message'], data: body['data']);
+        } else {
+          return ApiResponse(success: false, message: body['message'] ?? 'Login gagal.');
+        }
+      } catch (e) {
+        lastError = e.toString();
+        continue;
       }
-    } catch (e) {
-      return ApiResponse(success: false, message: 'Koneksi error: $e');
     }
+
+    if (lastError.contains('Connection refused') || lastError.contains('Failed host lookup') || lastError.contains('TimeoutException')) {
+      return ApiResponse(success: false, message: 'Gagal terhubung ke backend. Pastikan server backend ("npm run dev") sudah dijalankan.');
+    }
+    return ApiResponse(success: false, message: 'Koneksi error: $lastError');
   }
 
   static Future<ApiResponse<Map<String, dynamic>>> register({
@@ -102,29 +119,42 @@ class ApiService {
     required String password,
     required String role,
   }) async {
-    try {
-      final response = await http.post(
-        Uri.parse(ApiConfig.registerUrl),
-        headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
-        body: jsonEncode({
-          'name': name,
-          'email': email,
-          'password': password,
-          'role': role,
-        }),
-      );
+    final urlsToTry = [
+      ApiConfig.baseUrl,
+      ...ApiConfig.candidateUrls.where((u) => u != ApiConfig.baseUrl)
+    ];
 
-      final body = jsonDecode(response.body);
-      if (response.statusCode == 201 && body['success'] == true) {
-        final token = body['data']['token'];
-        await saveToken(token);
-        return ApiResponse(success: true, message: body['message'], data: body['data']);
-      } else {
-        return ApiResponse(success: false, message: body['message'] ?? 'Registrasi gagal.');
+    String lastError = '';
+
+    for (final base in urlsToTry) {
+      try {
+        final response = await http.post(
+          Uri.parse('$base/api/auth/register'),
+          headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+          body: jsonEncode({
+            'name': name,
+            'email': email,
+            'password': password,
+            'role': role,
+          }),
+        ).timeout(const Duration(seconds: 4));
+
+        final body = jsonDecode(response.body);
+        if (response.statusCode == 201 && body['success'] == true) {
+          ApiConfig.setWorkingBaseUrl(base);
+          final token = body['data']['token'];
+          await saveToken(token);
+          return ApiResponse(success: true, message: body['message'], data: body['data']);
+        } else {
+          return ApiResponse(success: false, message: body['message'] ?? 'Registrasi gagal.');
+        }
+      } catch (e) {
+        lastError = e.toString();
+        continue;
       }
-    } catch (e) {
-      return ApiResponse(success: false, message: 'Koneksi error: $e');
     }
+
+    return ApiResponse(success: false, message: 'Koneksi error: $lastError');
   }
 
   static Future<ApiResponse<Map<String, dynamic>>> getProfile() async {
