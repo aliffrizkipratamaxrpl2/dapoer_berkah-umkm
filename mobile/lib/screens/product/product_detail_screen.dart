@@ -73,7 +73,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           children: [
             Icon(Icons.shopping_cart_checkout, color: AppTheme.secondaryColor),
             SizedBox(width: 8),
-            Text('Konfirmasi Pesanan'),
+            Expanded(
+              child: Text('Konfirmasi Pesanan'),
+            ),
           ],
         ),
         content: Column(
