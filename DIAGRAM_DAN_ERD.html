@@ -177,6 +177,7 @@
 flowchart LR
     Admin(["👤 Aktor: ADMIN<br/>(Pemilik / Manajer)"])
     Kasir(["👤 Aktor: KASIR<br/>(Pelayan / Front Office)"])
+    Pelanggan(["👤 Aktor: PELANGGAN<br/>(Konsumen / Pembeli)"])
 
     subgraph "SISTEM OPERASIONAL UMKM DAPOER BERKAH"
         UC1((UC-01: Registrasi Akun))
@@ -188,10 +189,11 @@ flowchart LR
         UC7((UC-07: Edit Menu &amp; Ganti Foto))
         UC8((UC-08: Hapus Menu &amp; File Fisik))
         UC9((UC-09: Kelola Kategori CRUD))
-        UC10((UC-10: Logout Akun))
+        UC10((UC-10: Beli Menu &amp; Kurangi Stok))
+        UC11((UC-11: Logout Akun))
     end
 
-    %% Relasi Aktor Admin
+    %% Relasi Aktor Admin (Akses Penuh)
     Admin --> UC1
     Admin --> UC2
     Admin --> UC3
@@ -202,17 +204,30 @@ flowchart LR
     Admin --> UC8
     Admin --> UC9
     Admin --> UC10
+    Admin --> UC11
 
-    %% Relasi Aktor Kasir (Terbatas)
+    %% Relasi Aktor Kasir
     Kasir --> UC1
     Kasir --> UC2
     Kasir --> UC3
     Kasir --> UC4
     Kasir --> UC5
     Kasir --> UC10
+    Kasir --> UC11
+
+    %% Relasi Aktor Pelanggan
+    Pelanggan --> UC1
+    Pelanggan --> UC2
+    Pelanggan --> UC3
+    Pelanggan --> UC4
+    Pelanggan --> UC5
+    Pelanggan --> UC10
+    Pelanggan --> UC11
 
     style Admin fill:#FFE0B2,stroke:#E65100,stroke-width:2px;
     style Kasir fill:#C8E6C9,stroke:#2E7D32,stroke-width:2px;
+    style Pelanggan fill:#BBDEFB,stroke:#1976D2,stroke-width:2px;
+    style UC10 fill:#E3F2FD,stroke:#1976D2,stroke-width:2px;
     style UC6 fill:#FFECB3,stroke:#FFA000;
     style UC7 fill:#FFECB3,stroke:#FFA000;
     style UC8 fill:#FFCDD2,stroke:#D32F2F;
