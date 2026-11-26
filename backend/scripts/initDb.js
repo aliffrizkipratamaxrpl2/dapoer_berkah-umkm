@@ -64,7 +64,7 @@ async function initializeDatabase() {
         name VARCHAR(100) NOT NULL,
         email VARCHAR(100) NOT NULL UNIQUE,
         password VARCHAR(255) NOT NULL,
-        role ENUM('admin', 'kasir') NOT NULL DEFAULT 'kasir',
+        role ENUM('admin', 'kasir', 'pelanggan') NOT NULL DEFAULT 'pelanggan',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -103,18 +103,21 @@ async function initializeDatabase() {
 
     console.log(`🌱 Melakukan seeding data awal...`);
 
-    // Seed Users (Admin & Kasir)
+    // Seed Users (Admin, Kasir, Pelanggan)
     const salt = await bcrypt.genSalt(10);
     const adminPasswordHash = await bcrypt.hash('admin123', salt);
     const kasirPasswordHash = await bcrypt.hash('kasir123', salt);
+    const pelangganPasswordHash = await bcrypt.hash('pelanggan123', salt);
 
     await connection.query(
       `INSERT INTO users (name, email, password, role) VALUES 
        (?, ?, ?, 'admin'),
-       (?, ?, ?, 'kasir')`,
+       (?, ?, ?, 'kasir'),
+       (?, ?, ?, 'pelanggan')`,
       [
         'Pemilik / Admin UMKM', 'admin@dapoerberkah.com', adminPasswordHash,
         'Kasir Dapoer Berkah', 'kasir@dapoerberkah.com', kasirPasswordHash,
+        'Pelanggan / Konsumen', 'pelanggan@dapoerberkah.com', pelangganPasswordHash,
       ]
     );
 

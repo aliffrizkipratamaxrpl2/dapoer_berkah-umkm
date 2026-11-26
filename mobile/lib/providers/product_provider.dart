@@ -128,4 +128,29 @@ class ProductProvider with ChangeNotifier {
       return false;
     }
   }
+
+  // Pembelian produk oleh pelanggan (Otomatis mengurangi stok lokal & server)
+  Future<Map<String, dynamic>> buyProduct(int id, int quantity) async {
+    _isLoading = true;
+    notifyListeners();
+
+    final res = await ApiService.buyProduct(id, quantity);
+    _isLoading = false;
+
+    if (res.success && res.data != null) {
+      if (res.data!['product'] != null) {
+        final updatedProduct = ProductModel.fromJson(res.data!['product']);
+        final index = _products.indexWhere((p) => p.id == id);
+        if (index != -1) {
+          _products[index] = updatedProduct;
+        }
+      }
+      notifyListeners();
+      return {'success': true, 'message': res.message, 'data': res.data};
+    } else {
+      _errorMessage = res.message;
+      notifyListeners();
+      return {'success': false, 'message': res.message};
+    }
+  }
 }

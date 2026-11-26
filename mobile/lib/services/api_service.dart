@@ -411,4 +411,28 @@ class ApiService {
       return ApiResponse(success: false, message: 'Koneksi error: $e');
     }
   }
+
+  // Beli Produk (Otomatis Mengurangi Stok di Database)
+  static Future<ApiResponse<Map<String, dynamic>>> buyProduct(int id, int quantity) async {
+    try {
+      final headers = await _getHeaders(isJson: true);
+      final response = await http.post(
+        Uri.parse('${ApiConfig.productsUrl}/$id/buy'),
+        headers: headers,
+        body: jsonEncode({'quantity': quantity}),
+      ).timeout(const Duration(seconds: 10));
+
+      final body = jsonDecode(response.body);
+      if (response.statusCode == 200 && body['success'] == true) {
+        return ApiResponse(
+          success: true,
+          message: body['message'],
+          data: body['data'] is Map<String, dynamic> ? body['data'] : null,
+        );
+      }
+      return ApiResponse(success: false, message: body['message'] ?? 'Pembelian gagal.');
+    } catch (e) {
+      return ApiResponse(success: false, message: 'Koneksi error: $e');
+    }
+  }
 }

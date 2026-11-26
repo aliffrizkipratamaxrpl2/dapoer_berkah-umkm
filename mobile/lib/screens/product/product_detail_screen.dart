@@ -20,6 +20,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   ProductModel? _product;
   bool _isLoading = true;
   String? _errorMessage;
+  int _buyQuantity = 1;
+  bool _isBuying = false;
 
   @override
   void initState() {
@@ -40,6 +42,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       setState(() {
         _product = ProductModel.fromJson(res.data!);
         _isLoading = false;
+        _buyQuantity = 1;
       });
     } else {
       setState(() {
@@ -47,6 +50,96 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         _isLoading = false;
       });
     }
+  }
+
+  void _confirmBuyProduct() {
+    if (_product == null) return;
+    if (_product!.stock <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Maaf, stok menu ini sedang habis!'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+
+    final totalBayar = _product!.price * _buyQuantity;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.shopping_cart_checkout, color: AppTheme.secondaryColor),
+            SizedBox(width: 8),
+            Text('Konfirmasi Pesanan'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Menu: ${_product!.name}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const SizedBox(height: 8),
+            Text('Jumlah Pesan: $_buyQuantity porsi'),
+            Text('Harga per Porsi: ${_product!.formattedPrice}'),
+            const Divider(height: 20),
+            Text(
+              'Total Bayar: Rp ${totalBayar.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.')}',
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppTheme.primaryColor),
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              'Catatan: Setelah konfirmasi, stok barang di sistem akan berkurang secara otomatis.',
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Batal'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.secondaryColor),
+            onPressed: () async {
+              Navigator.pop(ctx);
+              setState(() {
+                _isBuying = true;
+              });
+
+              final provider = Provider.of<ProductProvider>(context, listen: false);
+              final result = await provider.buyProduct(_product!.id, _buyQuantity);
+
+              if (!mounted) return;
+              setState(() {
+                _isBuying = false;
+              });
+
+              if (result['success'] == true) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(result['message'] ?? 'Pembelian berhasil! Stok otomatis berkurang.'),
+                    backgroundColor: AppTheme.secondaryColor,
+                    duration: const Duration(seconds: 4),
+                  ),
+                );
+                _loadProductDetail();
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(result['message'] ?? 'Pembelian gagal.'),
+                    backgroundColor: Colors.redAccent,
+                  ),
+                );
+              }
+            },
+            child: const Text('Konfirmasi & Beli'),
+          ),
+        ],
+      ),
+    );
   }
 
   void _confirmDelete() {
@@ -271,18 +364,25 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                   Container(
                                     padding: const EdgeInsets.all(12),
                                     decoration: BoxDecoration(
-                                      color: Colors.blue.shade50,
+                                      color: (user?.isPelanggan == true) ? Colors.green.shade50 : Colors.blue.shade50,
                                       borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(color: Colors.blue.shade200),
+                                      border: Border.all(
+                                        color: (user?.isPelanggan == true) ? Colors.green.shade300 : Colors.blue.shade200,
+                                      ),
                                     ),
-                                    child: const Row(
+                                    child: Row(
                                       children: [
-                                        Icon(Icons.info, color: Colors.blueAccent),
-                                        SizedBox(width: 10),
+                                        Icon(
+                                          (user?.isPelanggan == true) ? Icons.shopping_bag_outlined : Icons.info,
+                                          color: (user?.isPelanggan == true) ? AppTheme.secondaryColor : Colors.blueAccent,
+                                        ),
+                                        const SizedBox(width: 10),
                                         Expanded(
                                           child: Text(
-                                            'Anda login sebagai KASIR. Untuk mengubah harga, stok, atau menghapus menu, silakan hubungi Admin.',
-                                            style: TextStyle(fontSize: 12, color: Colors.blueGrey),
+                                            (user?.isPelanggan == true)
+                                                ? 'Anda masuk sebagai PELANGGAN. Atur jumlah pesanan di bawah, lalu klik "Beli Sekarang". Stok barang akan berkurang otomatis!'
+                                                : 'Anda login sebagai KASIR. Untuk mengubah harga, stok, atau menghapus menu, silakan hubungi Admin.',
+                                            style: const TextStyle(fontSize: 12, color: Colors.blueGrey),
                                           ),
                                         ),
                                       ],
@@ -294,56 +394,125 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         ],
                       ),
                     ),
-      // Tombol Aksi di Bawah (Khusus Admin)
-      bottomNavigationBar: isAdmin && _product != null
-          ? Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.06),
-                    blurRadius: 10,
-                    offset: const Offset(0, -3),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        side: const BorderSide(color: Colors.redAccent),
+      // Tombol Aksi di Bawah (Admin: Edit/Hapus, Pelanggan & Kasir: Beli Menu dengan Counter)
+      bottomNavigationBar: _product == null
+          ? null
+          : isAdmin
+              ? Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.06),
+                        blurRadius: 10,
+                        offset: const Offset(0, -3),
                       ),
-                      icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                      label: const Text('Hapus Menu', style: TextStyle(color: Colors.redAccent)),
-                      onPressed: _confirmDelete,
-                    ),
+                    ],
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                      ),
-                      icon: const Icon(Icons.edit),
-                      label: const Text('Edit Menu'),
-                      onPressed: () async {
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => ProductFormScreen(product: _product),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            side: const BorderSide(color: Colors.redAccent),
                           ),
-                        );
-                        _loadProductDetail();
-                      },
-                    ),
+                          icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                          label: const Text('Hapus Menu', style: TextStyle(color: Colors.redAccent)),
+                          onPressed: _confirmDelete,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
+                          icon: const Icon(Icons.edit),
+                          label: const Text('Edit Menu'),
+                          onPressed: () async {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ProductFormScreen(product: _product),
+                              ),
+                            );
+                            _loadProductDetail();
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            )
-          : null,
+                )
+              : Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.08),
+                        blurRadius: 10,
+                        offset: const Offset(0, -3),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      // Counter Jumlah Pesanan
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.remove, size: 18),
+                              onPressed: (_buyQuantity > 1 && !_isBuying)
+                                  ? () => setState(() => _buyQuantity--)
+                                  : null,
+                            ),
+                            Text(
+                              '$_buyQuantity',
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.add, size: 18),
+                              onPressed: (_product!.stock > _buyQuantity && !_isBuying)
+                                  ? () => setState(() => _buyQuantity++)
+                                  : null,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      // Tombol Beli Sekarang
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _product!.stock > 0 ? AppTheme.secondaryColor : Colors.grey,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
+                          icon: _isBuying
+                              ? const SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                )
+                              : const Icon(Icons.shopping_cart_checkout),
+                          label: Text(
+                            _product!.stock > 0 ? 'Beli Sekarang' : 'Stok Habis',
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                          ),
+                          onPressed: (_product!.stock > 0 && !_isBuying)
+                              ? _confirmBuyProduct
+                              : null,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
     );
   }
 

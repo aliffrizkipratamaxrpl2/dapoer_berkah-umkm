@@ -135,10 +135,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                   side: const BorderSide(color: AppTheme.primaryColor),
                                 ),
                                 onPressed: () => _fillCredentials('admin@dapoerberkah.com', 'admin123'),
-                                child: const Text('Admin', style: TextStyle(fontSize: 12, color: AppTheme.primaryColor)),
+                                child: const Text('Admin', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppTheme.primaryColor)),
                               ),
                             ),
-                            const SizedBox(width: 8),
+                            const SizedBox(width: 6),
                             Expanded(
                               child: OutlinedButton(
                                 style: OutlinedButton.styleFrom(
@@ -146,7 +146,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                   side: const BorderSide(color: AppTheme.secondaryColor),
                                 ),
                                 onPressed: () => _fillCredentials('kasir@dapoerberkah.com', 'kasir123'),
-                                child: const Text('Kasir', style: TextStyle(fontSize: 12, color: AppTheme.secondaryColor)),
+                                child: const Text('Kasir', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppTheme.secondaryColor)),
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(vertical: 8),
+                                  side: const BorderSide(color: Colors.blueAccent),
+                                ),
+                                onPressed: () => _fillCredentials('pelanggan@dapoerberkah.com', 'pelanggan123'),
+                                child: const Text('Pelanggan', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
                               ),
                             ),
                           ],

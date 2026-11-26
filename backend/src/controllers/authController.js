@@ -19,8 +19,11 @@ const register = async (req, res) => {
       return errorResponse(res, 400, 'Password minimal harus 6 karakter.');
     }
 
-    // Role yang valid: 'admin' atau 'kasir'
-    const userRole = role === 'admin' ? 'admin' : 'kasir';
+    // Role yang valid: 'admin', 'kasir', atau 'pelanggan'
+    let userRole = 'pelanggan';
+    if (role === 'admin') userRole = 'admin';
+    else if (role === 'kasir') userRole = 'kasir';
+    else userRole = 'pelanggan';
 
     // Cek apakah email sudah terdaftar
     const [existingUsers] = await db.query('SELECT id FROM users WHERE email = ?', [email]);

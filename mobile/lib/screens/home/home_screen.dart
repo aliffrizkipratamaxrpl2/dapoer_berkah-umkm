@@ -152,7 +152,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
-                              color: isAdmin ? Colors.amber.shade700 : AppTheme.secondaryColor,
+                              color: isAdmin 
+                                  ? Colors.amber.shade700 
+                                  : (user?.isPelanggan == true ? Colors.blue.shade600 : AppTheme.secondaryColor),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(

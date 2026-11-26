@@ -2,7 +2,7 @@ class UserModel {
   final int id;
   final String name;
   final String email;
-  final String role; // 'admin' atau 'kasir'
+  final String role; // 'admin', 'kasir', atau 'pelanggan'
 
   UserModel({
     required this.id,
@@ -13,6 +13,7 @@ class UserModel {
 
   bool get isAdmin => role.toLowerCase() == 'admin';
   bool get isKasir => role.toLowerCase() == 'kasir';
+  bool get isPelanggan => role.toLowerCase() == 'pelanggan';
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(

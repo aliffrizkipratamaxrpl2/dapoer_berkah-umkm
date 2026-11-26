@@ -249,11 +249,84 @@ const deleteProduct = async (req, res) => {
   }
 };
 
+/**
+ * Controller: Pembelian Produk (Otomatis Mengurangi Stok)
+ * Dapat diakses oleh Pelanggan, Kasir, atau Admin
+ */
+const buyProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const quantity = parseInt(req.body.quantity || 1, 10);
+
+    if (isNaN(quantity) || quantity <= 0) {
+      return errorResponse(res, 400, 'Jumlah pembelian minimal 1 item.');
+    }
+
+    // Ambil produk saat ini
+    const [products] = await db.query(
+      `SELECT p.id, p.category_id, p.name, p.description, p.price, p.stock, p.image_url, 
+              p.created_at, p.updated_at, c.name AS category_name
+       FROM products p
+       INNER JOIN categories c ON p.category_id = c.id
+       WHERE p.id = ?`,
+      [id]
+    );
+
+    if (products.length === 0) {
+      return errorResponse(res, 404, `Produk dengan ID ${id} tidak ditemukan.`);
+    }
+
+    const product = products[0];
+    const currentStock = parseInt(product.stock, 10);
+
+    if (currentStock < quantity) {
+      return errorResponse(
+        res,
+        400,
+        `Stok tidak mencukupi! Sisa stok "${product.name}" hanya ${currentStock} item.`
+      );
+    }
+
+    // Kurangi stok barang secara otomatis
+    const newStock = currentStock - quantity;
+    await db.query('UPDATE products SET stock = ? WHERE id = ?', [newStock, id]);
+
+    const updatedProduct = {
+      ...product,
+      stock: newStock,
+      price: parseFloat(product.price),
+    };
+
+    const totalPrice = parseFloat(product.price) * quantity;
+
+    return successResponse(res, 200, `Pembelian ${quantity}x "${product.name}" berhasil! Stok otomatis berkurang.`, {
+      product: formatProduct(updatedProduct, req),
+      transaction: {
+        product_id: product.id,
+        product_name: product.name,
+        quantity,
+        price_per_item: parseFloat(product.price),
+        total_price: totalPrice,
+        previous_stock: currentStock,
+        remaining_stock: newStock,
+        buyer_id: req.user ? req.user.id : null,
+        buyer_name: req.user ? req.user.name : 'Pelanggan',
+        buyer_role: req.user ? req.user.role : 'pelanggan',
+        timestamp: new Date().toISOString(),
+      },
+    });
+  } catch (error) {
+    console.error('Buy Product Error:', error);
+    return errorResponse(res, 500, 'Gagal memproses pembelian produk.', error.message);
+  }
+};
+
 module.exports = {
   getAllProducts,
   getProductById,
   createProduct,
   updateProduct,
   deleteProduct,
+  buyProduct,
 };
 

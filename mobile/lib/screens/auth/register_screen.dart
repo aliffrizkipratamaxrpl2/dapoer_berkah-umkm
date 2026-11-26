@@ -158,6 +158,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   items: const [
                     DropdownMenuItem(
+                      value: 'pelanggan',
+                      child: Text('Pelanggan (Membeli menu kuliner)'),
+                    ),
+                    DropdownMenuItem(
                       value: 'kasir',
                       child: Text('Kasir / Staf (Melihat menu, cek stok)'),
                     ),

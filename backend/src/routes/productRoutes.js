@@ -8,9 +8,13 @@ const upload = require('../middlewares/uploadMiddleware');
 // Semua rute produk memerlukan autentikasi token
 router.use(authenticateToken);
 
-// GET: Semua role (admin & kasir) dapat melihat daftar & detail produk
+// GET: Semua role (admin, kasir, pelanggan) dapat melihat daftar & detail produk
 router.get('/', productController.getAllProducts);
 router.get('/:id', productController.getProductById);
+
+// POST: Pembelian produk (Otomatis mengurangi stok di database)
+// Terbuka untuk semua pengguna terotentikasi (Pelanggan, Kasir, Admin)
+router.post('/:id/buy', productController.buyProduct);
 
 // POST, PUT, DELETE: Khusus role 'admin'
 // Mendukung upload gambar produk melalui multipart/form-data dengan field 'image'
