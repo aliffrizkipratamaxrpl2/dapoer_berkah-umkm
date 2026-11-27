@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../config/theme.dart';
+import '../config/api_config.dart';
 import 'auth/login_screen.dart';
 import 'home/home_screen.dart';
 
@@ -20,7 +21,11 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _checkAuth() async {
-    await Future.delayed(const Duration(milliseconds: 1200));
+    // Otomatis deteksi jalur backend (LDPlayer 172.16.1.2, Localhost, atau Wi-Fi)
+    await Future.wait([
+      Future.delayed(const Duration(milliseconds: 1000)),
+      ApiConfig.detectWorkingBaseUrl(),
+    ]);
     if (!mounted) return;
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);

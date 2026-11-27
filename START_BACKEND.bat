@@ -7,10 +7,14 @@ echo      SERVER BACKEND DAPOER BERKAH UMKM (EXPRESS + MYSQL AIVEN)
 echo ======================================================================
 echo.
 
-:: Menghubungkan port 5000 langsung ke Emulator Android
+:: Menghubungkan port 5000 langsung ke LDPlayer dan Android Emulator
+if exist "C:\LDPlayer\LDPlayer14\adb.exe" (
+    "C:\LDPlayer\LDPlayer14\adb.exe" reverse tcp:5000 tcp:5000 >nul 2>&1
+    echo [OK] Jalur port 5000 ke LDPlayer berhasil dihubungkan (adb reverse)!
+)
 if exist "%LOCALAPPDATA%\Android\Sdk\platform-tools\adb.exe" (
     "%LOCALAPPDATA%\Android\Sdk\platform-tools\adb.exe" reverse tcp:5000 tcp:5000 >nul 2>&1
-    echo [OK] Jalur koneksi port 5000 ke Emulator Android sudah AKTIF (adb reverse)!
+    echo [OK] Jalur port 5000 ke Android SDK Emulator berhasil dihubungkan!
 )
 
 echo [OK] Memulai server Express.js di http://localhost:5000...
