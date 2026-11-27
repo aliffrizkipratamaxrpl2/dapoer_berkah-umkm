@@ -16,7 +16,7 @@ const {
   Header,
   Footer,
   PageNumber,
-} = require('docx');
+} = require(path.join(__dirname, 'backend/node_modules/docx'));
 
 async function createSrsWordDocument() {
   const primaryColor = 'E65100'; // Amber/Orange
@@ -347,10 +347,12 @@ async function createSrsWordDocument() {
             'Sistem mencakup pengelolaan katalog menu, pengelompokan kategori hidangan, manajemen persediaan stok siap saji, pengunggahan foto menu makanan, serta diferensiasi hak akses operasional kasir dan administrator.'
           ),
           makeH2('3.3 Kebutuhan Fungsional'),
-          makeBullet('Modul Autentikasi', 'Pendaftaran akun, login terenkripsi hash bcrypt, proteksi JWT, dan logout.'),
-          makeBullet('Modul Kategori (CRUD)', 'Melihat, menambah, mengubah, dan menghapus kategori menu.'),
-          makeBullet('Modul Produk (CRUD + Upload)', 'Melihat katalog, detail menu, filter kategori, pencarian realtime, upload foto resolusi tinggi, dan kontrol stok.'),
-          makeBullet('Otorisasi Role (RBAC)', 'Admin memiliki wewenang penuh (CRUD + Upload); Kasir berstatus read-only (melihat menu, mengecek stok, melayani pelanggan).'),
+          makeBullet('Modul Autentikasi (3 Role)', 'Pendaftaran akun, login terenkripsi hash bcrypt, proteksi JWT, dan logout untuk Admin, Kasir, dan Pelanggan.'),
+          makeBullet('Modul Kategori (CRUD)', 'Melihat, menambah, mengubah, dan menghapus master kategori hidangan kuliner.'),
+          makeBullet('Modul Produk (CRUD + Upload)', 'Melihat katalog berfoto, detail menu, filter kategori, pencarian realtime, upload foto resolusi tinggi dari kamera/galeri, dan pemantauan sisa stok.'),
+          makeBullet('Modul Transaksi Pembelian & Metode Bayar', 'Pelanggan memilih porsi hidangan, memilih metode pembayaran (Tunai, QRIS E-Wallet, atau Transfer Bank), dan sistem memotong stok secara otomatis (UPDATE products SET stock = stock - qty).'),
+          makeBullet('Modul Simulasi Memasak & Riwayat Pesanan', 'Hitung mundur waktu memasak hidangan (timer 3 menit), status berubah menjadi Siap Dihidangkan, dan pesanan otomatis masuk ke Riwayat Pesanan lengkap dengan kode unik DB-XXXXXX dan nota digital.'),
+          makeBullet('Otorisasi Role (RBAC)', 'Admin memiliki wewenang penuh (CRUD + Upload Foto); Kasir dapat melihat katalog, cek stok, dan melayani pemesanan; Pelanggan dapat berbelanja menu dan melihat riwayat pesanan miliknya.'),
           makeH2('3.4 Kebutuhan Non-Fungsional'),
           makeBullet('Keamanan (Security)', 'Password hash satu arah dengan bcrypt (salt 10). Endpoint privat dilindungi middleware JWT.'),
           makeBullet('Integritas Data', 'Foreign key cascade delete/update menjaga integritas relasi kategori dan produk.'),
@@ -370,7 +372,8 @@ async function createSrsWordDocument() {
           // 4.1.1
           makeH3('4.1.1 Interaksi Aktor dengan Sistem'),
           makeBullet('Aktor 1: Admin (Pemilik / Manajer)', 'Memiliki hak akses penuh untuk melakukan CRUD pada kategori menu, CRUD produk, mengunggah foto menu dari kamera/galeri, menghapus foto fisik, dan memantau stok produk.'),
-          makeBullet('Aktor 2: Kasir (Staf Pelayanan / Front Office)', 'Memiliki hak akses operasional terbatas untuk melihat katalog menu, melakukan pencarian menu, memfilter kategori, dan mengecek ketersediaan stok siap saji.'),
+          makeBullet('Aktor 2: Kasir (Staf Pelayanan / Front Office)', 'Memiliki hak akses operasional untuk melihat katalog menu, melayani pemesanan langsung, mengecek stok, dan memantau status di Riwayat Pesanan.'),
+          makeBullet('Aktor 3: Pelanggan (Konsumen / Pembeli)', 'Dapat mendaftar akun, membuka katalog makanan, memilih porsi dan metode pembayaran (Tunai/QRIS/Transfer), memantau waktu memasak, serta melihat Riwayat Pesanan dan nota digital.'),
 
           // 4.1.2
           makeH3('4.1.2 Use Case Diagram & Spesifikasi Use Case'),
@@ -390,7 +393,7 @@ async function createSrsWordDocument() {
                 children: [
                   makeTableCell('UC-01', 12, AlignmentType.CENTER),
                   makeTableCell('Registrasi Akun', 30),
-                  makeTableCell('Admin, Kasir', 18),
+                  makeTableCell('Admin, Kasir, Pelanggan', 18),
                   makeTableCell('Mendaftarkan akun baru dengan enkripsi password bcrypt.', 40),
                 ],
               }),
@@ -398,7 +401,7 @@ async function createSrsWordDocument() {
                 children: [
                   makeTableCell('UC-02', 12, AlignmentType.CENTER),
                   makeTableCell('Login & Autentikasi', 30),
-                  makeTableCell('Admin, Kasir', 18),
+                  makeTableCell('Admin, Kasir, Pelanggan', 18),
                   makeTableCell('Memverifikasi kredensial email & password dan menerbitkan JWT.', 40),
                 ],
               }),
@@ -406,7 +409,7 @@ async function createSrsWordDocument() {
                 children: [
                   makeTableCell('UC-03', 12, AlignmentType.CENTER),
                   makeTableCell('Lihat Dashboard & Stok', 30),
-                  makeTableCell('Admin, Kasir', 18),
+                  makeTableCell('Admin, Kasir, Pelanggan', 18),
                   makeTableCell('Menampilkan total produk, kategori, dan produk stok menipis.', 40),
                 ],
               }),
@@ -414,7 +417,7 @@ async function createSrsWordDocument() {
                 children: [
                   makeTableCell('UC-04', 12, AlignmentType.CENTER),
                   makeTableCell('Lihat Katalog & Detail', 30),
-                  makeTableCell('Admin, Kasir', 18),
+                  makeTableCell('Admin, Kasir, Pelanggan', 18),
                   makeTableCell('Menampilkan kartu menu berfoto, harga Rupiah, dan status ketersediaan.', 40),
                 ],
               }),
@@ -422,7 +425,7 @@ async function createSrsWordDocument() {
                 children: [
                   makeTableCell('UC-05', 12, AlignmentType.CENTER),
                   makeTableCell('Cari & Filter Menu', 30),
-                  makeTableCell('Admin, Kasir', 18),
+                  makeTableCell('Admin, Kasir, Pelanggan', 18),
                   makeTableCell('Menyaring menu berdasarkan kategori dan pencarian nama/deskripsi.', 40),
                 ],
               }),
@@ -461,8 +464,24 @@ async function createSrsWordDocument() {
               new TableRow({
                 children: [
                   makeTableCell('UC-10', 12, AlignmentType.CENTER),
+                  makeTableCell('Beli Menu & Pilih Bayar', 30),
+                  makeTableCell('Pelanggan, Kasir', 18, AlignmentType.LEFT, true),
+                  makeTableCell('Membeli menu makanan, pilih metode bayar, dan potong stok otomatis.', 40),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  makeTableCell('UC-11', 12, AlignmentType.CENTER),
+                  makeTableCell('Riwayat Pesanan & Nota', 30),
+                  makeTableCell('Semua Role', 18, AlignmentType.LEFT, true),
+                  makeTableCell('Melihat status memasak/penyajian dan membuka nota digital belanja.', 40),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  makeTableCell('UC-12', 12, AlignmentType.CENTER),
                   makeTableCell('Logout Pengguna', 30),
-                  makeTableCell('Admin, Kasir', 18),
+                  makeTableCell('Semua Role', 18),
                   makeTableCell('Menghapus token sesi lokal dan kembali ke Login Screen.', 40),
                 ],
               }),
@@ -472,11 +491,12 @@ async function createSrsWordDocument() {
           // 4.1.3
           makeH3('4.1.3 Activity Diagram (Alur Proses Sistem)'),
           makeP(
-            'Activity Diagram mendeskripsikan aliran proses bisnis dan alur kerja sistem. Terdapat 3 skenario aktivitas utama:'
+            'Activity Diagram mendeskripsikan aliran proses bisnis dan alur kerja sistem. Terdapat 4 skenario aktivitas utama:'
           ),
-          makeBullet('A. Alur Autentikasi Login', 'Pengguna membuka aplikasi -> input email & password -> validasi client -> kirim request POST /api/auth/login -> backend verifikasi bcrypt compare -> jika tidak cocok kembalikan 401; jika cocok terbitkan JWT -> simpan token di SharedPreferences -> buka Dashboard.'),
-          makeBullet('B. Alur Tambah Menu & Upload Foto (Admin)', 'Admin membuka form -> input nama, harga, stok, deskripsi -> pilih kategori -> ambil foto kamera/galeri (image_picker) -> preview foto -> klik simpan -> kirim multipart request -> authMiddleware verifikasi token -> roleMiddleware validasi role admin -> uploadMiddleware simpan file fisik di /uploads/ -> database INSERT products -> respon 201 Created -> SnackBar sukses & refresh katalog.'),
-          makeBullet('C. Alur Hapus Menu dengan Konfirmasi (Admin)', 'Admin klik tombol hapus -> sistem memunculkan AlertDialog konfirmasi -> jika pengguna memilih Batal maka dialog ditutup; jika memilih Hapus maka dikirim DELETE /api/products/:id -> backend verifikasi role admin -> backend menghapus file foto fisik melalui fs.unlinkSync -> eksekusi kueri DELETE database -> respon 200 OK -> state produk dihapus & SnackBar tampil.'),
+          makeBullet('A. Alur Autentikasi Login', 'Pengguna membuka aplikasi -> sistem cek koneksi backend otomatis -> input email & password -> kirim POST /api/auth/login -> verifikasi hash bcrypt -> simpan JWT di SharedPreferences -> buka Dashboard.'),
+          makeBullet('B. Alur Tambah Menu & Upload Foto (Admin)', 'Admin membuka form -> input data menu -> pilih foto kamera/galeri -> kirim multipart request -> authMiddleware & roleMiddleware validasi admin -> simpan file di /uploads/ dan record di database -> respon 201 Created.'),
+          makeBullet('C. Alur Hapus Menu dengan Konfirmasi (Admin)', 'Admin klik hapus -> konfirmasi dialog -> jika yakin, kirim DELETE /api/products/:id -> backend verifikasi admin -> hapus file foto fisik di server -> hapus record di DB -> respon 200 OK.'),
+          makeBullet('D. Alur Pembelian, Pembayaran, Memasak & Riwayat Pesanan (Pelanggan & Kasir)', 'Pelanggan pilih menu & porsi -> cek stok cukup -> klik Beli -> pilih metode pembayaran (Tunai/QRIS/Transfer) -> klik Konfirmasi & Bayar -> backend potong stok otomatis & generate kode DB-XXXXXX -> aplikasi masuk layar memasak (Timer 3 Menit) -> makanan matang & siap dihidangkan -> pesanan otomatis masuk ke Riwayat Pesanan & nota digital tersimpan.'),
 
           // 4.1.4
           makeH3('4.1.4 Class Diagram (Struktur Kelas Sistem)'),
@@ -494,7 +514,7 @@ async function createSrsWordDocument() {
               new TableRow({
                 children: [
                   makeTableCell('UserModel', 22, AlignmentType.LEFT, true),
-                  makeTableCell('+int id\n+String name\n+String email\n+String role\n+bool isAdmin\n+bool isKasir', 43),
+                  makeTableCell('+int id\n+String name\n+String email\n+String role\n+bool isAdmin\n+bool isKasir\n+bool isPelanggan', 43),
                   makeTableCell('+fromJson(Map json)\n+toJson() Map', 35),
                 ],
               }),
@@ -508,15 +528,22 @@ async function createSrsWordDocument() {
               new TableRow({
                 children: [
                   makeTableCell('ProductModel', 22, AlignmentType.LEFT, true),
-                  makeTableCell('+int id\n+int categoryId\n+String categoryName\n+String name\n+double price\n+int stock\n+String? imageUrl\n+String? imageFullUrl', 43),
+                  makeTableCell('+int id\n+int categoryId\n+String categoryName\n+String name\n+double price\n+int stock (Sisa Stok)\n+String? imageUrl\n+String? imageFullUrl', 43),
                   makeTableCell('+formattedPrice (Rp)\n+fromJson(Map json)\n+toJson() Map', 35),
                 ],
               }),
               new TableRow({
                 children: [
+                  makeTableCell('OrderModel', 22, AlignmentType.LEFT, true),
+                  makeTableCell('+int id\n+String orderNumber (DB-XXXXXX)\n+String buyerName\n+String productName\n+int quantity\n+double totalPrice\n+String paymentMethod\n+String status\n+DateTime createdAt', 43),
+                  makeTableCell('+formattedTotalPrice (Rp)\n+formattedDate\n+fromJson(Map json)', 35),
+                ],
+              }),
+              new TableRow({
+                children: [
                   makeTableCell('ApiService', 22, AlignmentType.LEFT, true),
-                  makeTableCell('+String tokenKey (SharedPreferences)', 43),
-                  makeTableCell('+login(email, pass)\n+register(name, email, pass, role)\n+getCategories()\n+createCategory()\n+getProducts()\n+createProduct(data, XFile img)\n+updateProduct(id, data, XFile img)\n+deleteProduct(id)', 35),
+                  makeTableCell('+String tokenKey (SharedPreferences)\n+String? _workingBaseUrl', 43),
+                  makeTableCell('+login(email, pass)\n+register(name, email, pass, role)\n+getCategories()\n+createCategory()\n+getProducts()\n+createProduct(data, XFile img)\n+updateProduct(id, data, XFile img)\n+deleteProduct(id)\n+buyProduct(id, qty, method)\n+getOrders()\n+updateOrderStatus(no, status)', 35),
                 ],
               }),
               new TableRow({
@@ -603,11 +630,11 @@ async function createSrsWordDocument() {
               new TableRow({
                 children: [
                   makeTableCell('role', 20, AlignmentType.LEFT, true),
-                  makeTableCell("ENUM('admin','kasir')", 20),
+                  makeTableCell("ENUM('admin','kasir','pelanggan')", 20),
                   makeTableCell('NO', 10, AlignmentType.CENTER),
                   makeTableCell('', 10),
-                  makeTableCell("'kasir'", 15, AlignmentType.CENTER),
-                  makeTableCell('Peranan otorisasi RBAC', 25),
+                  makeTableCell("'pelanggan'", 15, AlignmentType.CENTER),
+                  makeTableCell('Peranan hak akses akun', 25),
                 ],
               }),
               new TableRow({
@@ -898,6 +925,24 @@ async function createSrsWordDocument() {
                   makeTableCell('PASSED', 10, AlignmentType.CENTER, true),
                 ],
               }),
+              new TableRow({
+                children: [
+                  makeTableCell('TC-09', 8, AlignmentType.CENTER),
+                  makeTableCell('Pelanggan Beli & Potong Stok', 35),
+                  makeTableCell('POST /api/products/:id/buy', 25),
+                  makeTableCell('Stok terpotong di DB MySQL', 22),
+                  makeTableCell('PASSED', 10, AlignmentType.CENTER, true),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  makeTableCell('TC-10', 8, AlignmentType.CENTER),
+                  makeTableCell('Alur Masak & Riwayat Pesanan', 35),
+                  makeTableCell('Timer Masak & GET /orders/list', 25),
+                  makeTableCell('Masuk riwayat & nota terbit', 22),
+                  makeTableCell('PASSED', 10, AlignmentType.CENTER, true),
+                ],
+              }),
             ],
           }),
           makeH2('4.5 Deployment'),
@@ -916,6 +961,7 @@ async function createSrsWordDocument() {
           makeBullet('Live Vercel REST API', 'https://backend-lipp-indonesia.vercel.app'),
           makeBullet('Akun Uji Coba Admin', 'admin@dapoerberkah.com / admin123 (Akses Penuh CRUD & Foto)'),
           makeBullet('Akun Uji Coba Kasir', 'kasir@dapoerberkah.com / kasir123 (Akses Lihat Menu & Cek Stok)'),
+          makeBullet('Akun Uji Coba Pelanggan', 'pelanggan@dapoerberkah.com / pelanggan123 (Akses Beli, Bayar & Riwayat)'),
         ],
       },
     ],
