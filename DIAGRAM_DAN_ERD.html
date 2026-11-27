@@ -189,8 +189,9 @@ flowchart LR
         UC7((UC-07: Edit Menu &amp; Ganti Foto))
         UC8((UC-08: Hapus Menu &amp; File Fisik))
         UC9((UC-09: Kelola Kategori CRUD))
-        UC10((UC-10: Beli Menu &amp; Kurangi Stok))
-        UC11((UC-11: Logout Akun))
+        UC10((UC-10: Beli Menu &amp; Pilih Metode Bayar))
+        UC11((UC-11: Riwayat Pesanan &amp; Nota Digital))
+        UC12((UC-12: Logout Akun))
     end
 
     %% Relasi Aktor Admin (Akses Penuh)
@@ -205,6 +206,7 @@ flowchart LR
     Admin --> UC9
     Admin --> UC10
     Admin --> UC11
+    Admin --> UC12
 
     %% Relasi Aktor Kasir
     Kasir --> UC1
@@ -214,6 +216,7 @@ flowchart LR
     Kasir --> UC5
     Kasir --> UC10
     Kasir --> UC11
+    Kasir --> UC12
 
     %% Relasi Aktor Pelanggan
     Pelanggan --> UC1
@@ -223,11 +226,13 @@ flowchart LR
     Pelanggan --> UC5
     Pelanggan --> UC10
     Pelanggan --> UC11
+    Pelanggan --> UC12
 
     style Admin fill:#FFE0B2,stroke:#E65100,stroke-width:2px;
     style Kasir fill:#C8E6C9,stroke:#2E7D32,stroke-width:2px;
     style Pelanggan fill:#BBDEFB,stroke:#1976D2,stroke-width:2px;
     style UC10 fill:#E3F2FD,stroke:#1976D2,stroke-width:2px;
+    style UC11 fill:#EDE7F6,stroke:#512DA8,stroke-width:2px;
     style UC6 fill:#FFECB3,stroke:#FFA000;
     style UC7 fill:#FFECB3,stroke:#FFA000;
     style UC8 fill:#FFCDD2,stroke:#D32F2F;
@@ -411,6 +416,36 @@ flowchart TD
     SnackBarDel --> EndDel
       </pre>
     </div>
+
+    <h3 style="margin: 32px 0 8px 0; color: #E65100; font-size: 16px;">D. Activity Diagram: Alur Pembelian, Pembayaran, Memasak &amp; Riwayat Pesanan</h3>
+    <p class="card-desc">Menggambarkan alur transaksi pembeli mulai dari memilih jumlah porsi, metode bayar (Tunai/QRIS/Transfer), pengurangan stok real-time, hitung mundur memasak, hingga otomatis tercatat di Riwayat Pesanan.</p>
+    <div class="diagram-box">
+      <pre class="mermaid">
+flowchart TD
+    StartBuy([Mulai]) --> BukaDetailMenu[Pelanggan Membuka Detail Menu Makanan]
+    BukaDetailMenu --> TentukanPorsi[Pilih Jumlah Porsi dengan Tombol +/-]
+    TentukanPorsi --> CekStokTersedia{Stok Produk >= Jumlah Beli?}
+    
+    CekStokTersedia -- Tidak Cukup --> DisableButton[Tombol Beli Dinonaktifkan & Tampil Alert Habis]
+    DisableButton --> EndBuy([Selesai])
+    
+    CekStokTersedia -- Cukup --> KlikBeliSekarang[Klik Tombol 'Beli Sekarang']
+    KlikBeliSekarang --> DialogBayar[Muncul Dialog Konfirmasi & Pilihan Metode Pembayaran]
+    DialogBayar --> PilihMetode[Pilih: Tunai / QRIS / Transfer Bank]
+    PilihMetode --> KonfirmasiBayar[Klik 'Konfirmasi & Bayar']
+    
+    KonfirmasiBayar --> KirimBuyAPI[Kirim POST /api/products/:id/buy ke Backend]
+    KirimBuyAPI --> BackendPotongStok[Backend Jalankan: UPDATE products SET stock = stock - qty]
+    BackendPotongStok --> InsertOrderDB[Backend Catat ke Tabel orders: No Pesanan DB-XXXXXX]
+    InsertOrderDB --> LayarMemasak[Aplikasi Masuk ke Layar OrderProcessScreen]
+    
+    LayarMemasak --> TimerHitungMundur[Hitung Mundur Estimasi Memasak (Timer 3 Menit)]
+    TimerHitungMundur --> SelesaiMasak[🎉 Makanan Matang: Status Berubah 'Siap Dihidangkan']
+    SelesaiMasak --> MasukRiwayat[Otomatis Tersimpan ke Riwayat Pesanan]
+    MasukRiwayat --> BukaRiwayatKapanSaja[Pelanggan & Kasir Dapat Cek Status & Nota Digital Kapan Saja]
+    BukaRiwayatKapanSaja --> EndBuy
+      </pre>
+    </div>
   </section>
 
   <!-- ================= 3. CLASS DIAGRAM ================= -->
@@ -465,6 +500,21 @@ classDiagram
         +ProductModel(id, categoryId, name, price, stock, ...)
         +fromJson(Map json) ProductModel
         +toJson() Map
+    }
+
+    class OrderModel {
+        +int id
+        +String orderNumber
+        +int userId
+        +String buyerName
+        +String productName
+        +int quantity
+        +double totalPrice
+        +String paymentMethod
+        +String status
+        +DateTime createdAt
+        +OrderModel(id, orderNumber, productName, ...)
+        +fromJson(Map json) OrderModel
     }
 
     class ApiService {
