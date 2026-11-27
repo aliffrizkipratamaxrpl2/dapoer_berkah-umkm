@@ -9,6 +9,7 @@ import '../category/category_list_screen.dart';
 import '../product/product_list_screen.dart';
 import '../product/product_form_screen.dart';
 import '../product/product_detail_screen.dart';
+import '../order/order_history_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -83,6 +84,16 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Dapoer Berkah UMKM'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.receipt_long_outlined),
+            tooltip: 'Riwayat Pesanan',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const OrderHistoryScreen()),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'Keluar',
@@ -251,6 +262,22 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ],
+              ),
+              const SizedBox(height: 12),
+
+              // Kartu Riwayat Pesanan
+              _buildActionCard(
+                icon: Icons.receipt_long,
+                title: 'Riwayat & Status Pesanan',
+                subtitle: 'Daftar transaksi, proses masak, dan nota digital pelanggan',
+                color: Colors.indigo,
+                isFullWidth: true,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const OrderHistoryScreen()),
+                  );
+                },
               ),
               const SizedBox(height: 12),
 

@@ -5,6 +5,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/api_config.dart';
+import '../models/order_model.dart';
 
 class ApiResponse<T> {
   final bool success;
@@ -440,6 +441,48 @@ class ApiService {
         );
       }
       return ApiResponse(success: false, message: body['message'] ?? 'Pembelian gagal.');
+    } catch (e) {
+      return ApiResponse(success: false, message: 'Koneksi error: $e');
+    }
+  }
+
+  // ------------------------------------------------------------------------
+  // ORDERS / RIWAYAT PESANAN SERVICES
+  // ------------------------------------------------------------------------
+  static Future<ApiResponse<List<OrderModel>>> getOrders() async {
+    try {
+      final headers = await _getHeaders();
+      final response = await http.get(
+        Uri.parse('${ApiConfig.productsUrl}/orders/list'),
+        headers: headers,
+      ).timeout(const Duration(seconds: 10));
+
+      final body = jsonDecode(response.body);
+      if (response.statusCode == 200 && body['success'] == true) {
+        final List<dynamic> list = body['data'] ?? [];
+        final orders = list.map((item) => OrderModel.fromJson(item)).toList();
+        return ApiResponse(success: true, message: body['message'], data: orders);
+      }
+      return ApiResponse(success: false, message: body['message'] ?? 'Gagal memuat riwayat pesanan.');
+    } catch (e) {
+      return ApiResponse(success: false, message: 'Koneksi error: $e');
+    }
+  }
+
+  static Future<ApiResponse<void>> updateOrderStatus(String orderIdOrNumber, String newStatus) async {
+    try {
+      final headers = await _getHeaders(isJson: true);
+      final response = await http.put(
+        Uri.parse('${ApiConfig.productsUrl}/orders/$orderIdOrNumber/status'),
+        headers: headers,
+        body: jsonEncode({'status': newStatus}),
+      ).timeout(const Duration(seconds: 10));
+
+      final body = jsonDecode(response.body);
+      if (response.statusCode == 200 && body['success'] == true) {
+        return ApiResponse(success: true, message: body['message']);
+      }
+      return ApiResponse(success: false, message: body['message'] ?? 'Gagal mengubah status.');
     } catch (e) {
       return ApiResponse(success: false, message: 'Koneksi error: $e');
     }

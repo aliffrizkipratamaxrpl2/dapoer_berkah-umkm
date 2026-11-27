@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../config/theme.dart';
+import '../../config/api_config.dart';
 import '../home/home_screen.dart';
 import 'register_screen.dart';
 
@@ -17,6 +18,24 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _isCheckingBackend = false;
+  bool _isBackendConnected = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkBackendStatus();
+  }
+
+  Future<void> _checkBackendStatus() async {
+    setState(() => _isCheckingBackend = true);
+    final connected = await ApiConfig.pingBackend();
+    if (!mounted) return;
+    setState(() {
+      _isCheckingBackend = false;
+      _isBackendConnected = connected;
+    });
+  }
 
   @override
   void dispose() {
@@ -108,7 +127,65 @@ class _LoginScreenState extends State<LoginScreen> {
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 14, color: AppTheme.textMuted),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 16),
+
+                  // Indikator Status Koneksi Backend (Mempermudah Deteksi Otomatis)
+                  Center(
+                    child: GestureDetector(
+                      onTap: _isCheckingBackend ? null : _checkBackendStatus,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: _isCheckingBackend
+                              ? Colors.blue.shade50
+                              : (_isBackendConnected ? Colors.green.shade50 : Colors.red.shade50),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: _isCheckingBackend
+                                ? Colors.blue.shade300
+                                : (_isBackendConnected ? Colors.green.shade400 : Colors.red.shade300),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (_isCheckingBackend)
+                              const SizedBox(
+                                width: 12,
+                                height: 12,
+                                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.blue),
+                              )
+                            else
+                              Icon(
+                                _isBackendConnected ? Icons.check_circle : Icons.warning_rounded,
+                                size: 14,
+                                color: _isBackendConnected ? Colors.green : Colors.red,
+                              ),
+                            const SizedBox(width: 8),
+                            Text(
+                              _isCheckingBackend
+                                  ? 'Mengecek koneksi backend...'
+                                  : (_isBackendConnected
+                                      ? 'Backend Terhubung (Port 5000)'
+                                      : 'Backend Offline • Ketuk untuk Cek (START_BACKEND.bat)'),
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                                color: _isCheckingBackend
+                                    ? Colors.blue.shade800
+                                    : (_isBackendConnected ? Colors.green.shade800 : Colors.red.shade800),
+                              ),
+                            ),
+                            if (!_isCheckingBackend && !_isBackendConnected) ...[
+                              const SizedBox(width: 4),
+                              const Icon(Icons.refresh, size: 13, color: Colors.red),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
 
                   // Quick Demo Pills (Sangat mempermudah penguji / dosen)
                   Container(

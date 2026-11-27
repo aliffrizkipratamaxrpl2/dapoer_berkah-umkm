@@ -33,6 +33,24 @@ class ApiConfig {
     _workingBaseUrl = url;
   }
 
+  static bool get isConnected => _workingBaseUrl != null;
+
+  // Tes ulang koneksi ke semua candidate URLs secara langsung
+  static Future<bool> pingBackend() async {
+    _workingBaseUrl = null;
+    for (final url in candidateUrls) {
+      try {
+        final res = await http.get(Uri.parse(url)).timeout(const Duration(milliseconds: 1200));
+        if (res.statusCode == 200) {
+          _workingBaseUrl = url;
+          debugPrint('[ApiConfig] Berhasil terhubung ke: $url');
+          return true;
+        }
+      } catch (_) {}
+    }
+    return false;
+  }
+
   // Otomatis mendeteksi IP yang aktif merespon
   static Future<String> detectWorkingBaseUrl() async {
     if (_workingBaseUrl != null) return _workingBaseUrl!;

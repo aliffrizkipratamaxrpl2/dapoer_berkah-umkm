@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../config/theme.dart';
 import '../../models/product_model.dart';
+import '../../services/api_service.dart';
+import 'order_history_screen.dart';
 
 enum OrderStatusPhase {
   paymentConfirmed,
@@ -73,6 +75,11 @@ class _OrderProcessScreenState extends State<OrderProcessScreen> with SingleTick
     setState(() {
       _remainingSeconds = 0;
       _phase = OrderStatusPhase.readyToServe;
+    });
+
+    // Otomatis sinkronkan status pesanan ke backend menjadi 'Siap Dihidangkan'
+    ApiService.updateOrderStatus(widget.orderNumber, 'Siap Dihidangkan').catchError((_) {
+      return ApiResponse(success: false, message: 'Gagal update status');
     });
   }
 
@@ -354,19 +361,41 @@ class _OrderProcessScreenState extends State<OrderProcessScreen> with SingleTick
                       ],
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 20),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green.shade700,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        backgroundColor: Colors.indigo.shade600,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
-                      icon: const Icon(Icons.done_all, color: Colors.white),
+                      icon: const Icon(Icons.receipt_long, color: Colors.white),
                       label: const Text(
-                        'Pesanan Diterima (Kembali ke Menu)',
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
+                        'Lihat di Riwayat Pesanan',
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+                      ),
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (_) => const OrderHistoryScreen()),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        side: BorderSide(color: Colors.green.shade700, width: 1.5),
+                      ),
+                      icon: Icon(Icons.done_all, color: Colors.green.shade700),
+                      label: Text(
+                        'Pesanan Selesai (Kembali ke Beranda)',
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.green.shade700),
                       ),
                       onPressed: () {
                         Navigator.pop(context, true);

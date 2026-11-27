@@ -10,6 +10,7 @@ router.use(authenticateToken);
 
 // GET: Semua role (admin, kasir, pelanggan) dapat melihat daftar & detail produk
 router.get('/orders/list', productController.getOrders);
+router.put('/orders/:id/status', productController.updateOrderStatus);
 router.get('/', productController.getAllProducts);
 router.get('/:id', productController.getProductById);
 

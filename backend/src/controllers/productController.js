@@ -392,14 +392,43 @@ const buyProduct = async (req, res) => {
  */
 const getOrders = async (req, res) => {
   try {
-    const [orders] = await db.query(`SELECT * FROM orders ORDER BY created_at DESC LIMIT 30`).catch(async (err) => {
+    let query = `SELECT * FROM orders`;
+    const params = [];
+
+    // Jika parameter my_orders=true dan user role pelanggan
+    if (req.query.my_orders === 'true' && req.user && req.user.role === 'pelanggan') {
+      query += ` WHERE user_id = ? OR buyer_name = ?`;
+      params.push(req.user.id, req.user.name);
+    }
+
+    query += ` ORDER BY created_at DESC LIMIT 50`;
+    let [orders] = await db.query(query, params).catch(async (err) => {
       if (err.code === 'ER_NO_SUCH_TABLE') return [[]];
       throw err;
     });
+
     return successResponse(res, 200, 'Daftar riwayat pesanan berhasil diambil.', orders);
   } catch (error) {
     console.error('Get Orders Error:', error);
     return errorResponse(res, 500, 'Gagal mengambil riwayat pesanan.', error.message);
+  }
+};
+
+/**
+ * Controller: Mengubah status pesanan (Sedang Dimasak / Siap Dihidangkan / Selesai)
+ */
+const updateOrderStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    if (!status) {
+      return errorResponse(res, 400, 'Status pesanan wajib disertakan.');
+    }
+    await db.query(`UPDATE orders SET status = ? WHERE id = ? OR order_number = ?`, [status, id, id]);
+    return successResponse(res, 200, `Status pesanan #${id} berhasil diubah menjadi: ${status}`);
+  } catch (error) {
+    console.error('Update Order Status Error:', error);
+    return errorResponse(res, 500, 'Gagal memperbarui status pesanan.', error.message);
   }
 };
 
@@ -411,5 +440,6 @@ module.exports = {
   deleteProduct,
   buyProduct,
   getOrders,
+  updateOrderStatus,
 };
 
