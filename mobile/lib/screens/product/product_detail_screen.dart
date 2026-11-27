@@ -6,6 +6,7 @@ import '../../config/theme.dart';
 import '../../models/product_model.dart';
 import '../../services/api_service.dart';
 import 'product_form_screen.dart';
+import '../order/order_process_screen.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final int productId;
@@ -65,81 +66,245 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     }
 
     final totalBayar = _product!.price * _buyQuantity;
+    String selectedPayment = 'Tunai';
 
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Row(
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                left: 20,
+                right: 20,
+                top: 20,
+                bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.shopping_bag_outlined, color: AppTheme.secondaryColor, size: 26),
+                      const SizedBox(width: 10),
+                      const Expanded(
+                        child: Text(
+                          'Konfirmasi Pesanan & Pembayaran',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.pop(ctx),
+                      ),
+                    ],
+                  ),
+                  const Divider(),
+                  const SizedBox(height: 8),
+
+                  // Detail Menu & Porsi
+                  Text(
+                    _product!.name,
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '$_buyQuantity porsi x ${_product!.formattedPrice}',
+                        style: const TextStyle(fontSize: 14, color: Colors.blueGrey),
+                      ),
+                      Text(
+                        'Rp ${totalBayar.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.')}',
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17, color: AppTheme.primaryColor),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 18),
+
+                  // Pilihan Metode Pembayaran
+                  const Text(
+                    'Pilih Metode Pembayaran:',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF263238)),
+                  ),
+                  const SizedBox(height: 10),
+
+                  // 1. Tunai (Bayar di Kasir)
+                  _buildPaymentOption(
+                    title: 'Tunai (Bayar di Kasir)',
+                    subtitle: 'Bayar langsung dengan uang tunai saat mengambil makanan',
+                    icon: Icons.payments_outlined,
+                    value: 'Tunai',
+                    groupValue: selectedPayment,
+                    onChanged: (val) => setModalState(() => selectedPayment = val!),
+                  ),
+
+                  // 2. QRIS (E-Wallet)
+                  _buildPaymentOption(
+                    title: 'QRIS (GoPay, OVO, DANA, ShopeePay)',
+                    subtitle: 'Pindai barcode QRIS langsung dari aplikasi e-wallet Anda',
+                    icon: Icons.qr_code_scanner,
+                    value: 'QRIS',
+                    groupValue: selectedPayment,
+                    onChanged: (val) => setModalState(() => selectedPayment = val!),
+                  ),
+
+                  // 3. Transfer Bank
+                  _buildPaymentOption(
+                    title: 'Transfer Bank (BCA, Mandiri, BRI)',
+                    subtitle: 'Transfer ke rekening operasional UMKM Dapoer Berkah',
+                    icon: Icons.account_balance_outlined,
+                    value: 'Transfer Bank',
+                    groupValue: selectedPayment,
+                    onChanged: (val) => setModalState(() => selectedPayment = val!),
+                  ),
+
+                  const SizedBox(height: 12),
+                  const Row(
+                    children: [
+                      Icon(Icons.access_time, size: 16, color: Colors.orange),
+                      SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          'Setelah bayar, pesanan langsung dimasak & dihidangkan saat selesai.',
+                          style: TextStyle(fontSize: 11, color: Colors.grey),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Tombol Konfirmasi & Bayar
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.secondaryColor,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      icon: const Icon(Icons.check_circle_outline, color: Colors.white),
+                      label: Text(
+                        'Konfirmasi & Bayar ($selectedPayment)',
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.white),
+                      ),
+                      onPressed: () async {
+                        Navigator.pop(ctx);
+                        setState(() {
+                          _isBuying = true;
+                        });
+
+                        final provider = Provider.of<ProductProvider>(context, listen: false);
+                        final result = await provider.buyProduct(
+                          _product!.id,
+                          _buyQuantity,
+                          paymentMethod: selectedPayment,
+                        );
+
+                        if (!mounted) return;
+                        setState(() {
+                          _isBuying = false;
+                        });
+
+                        if (result['success'] == true) {
+                          final transaction = result['data']?['transaction'] ?? {};
+                          final orderNumber = transaction['order_number'] ?? 'DB-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
+
+                          // Buka Layar Alur Menunggu Memasak & Penyajian Menu
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => OrderProcessScreen(
+                                product: _product!,
+                                quantity: _buyQuantity,
+                                totalPrice: totalBayar,
+                                paymentMethod: selectedPayment,
+                                orderNumber: orderNumber,
+                              ),
+                            ),
+                          );
+
+                          // Segarkan data produk setelah kembali
+                          _loadProductDetail();
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(result['message'] ?? 'Pembelian gagal.'),
+                              backgroundColor: Colors.redAccent,
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildPaymentOption({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required String value,
+    required String groupValue,
+    required ValueChanged<String?> onChanged,
+  }) {
+    final isSelected = value == groupValue;
+    return GestureDetector(
+      onTap: () => onChanged(value),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.green.shade50 : Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: isSelected ? AppTheme.secondaryColor : Colors.grey.shade300,
+            width: isSelected ? 1.5 : 1,
+          ),
+        ),
+        child: Row(
           children: [
-            Icon(Icons.shopping_cart_checkout, color: AppTheme.secondaryColor),
-            SizedBox(width: 8),
+            Icon(icon, color: isSelected ? AppTheme.secondaryColor : Colors.grey.shade700, size: 22),
+            const SizedBox(width: 12),
             Expanded(
-              child: Text('Konfirmasi Pesanan'),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: isSelected ? AppTheme.secondaryColor : Colors.black87,
+                    ),
+                  ),
+                  Text(
+                    subtitle,
+                    style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+                  ),
+                ],
+              ),
+            ),
+            Radio<String>(
+              value: value,
+              groupValue: groupValue,
+              activeColor: AppTheme.secondaryColor,
+              onChanged: onChanged,
             ),
           ],
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Menu: ${_product!.name}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-            const SizedBox(height: 8),
-            Text('Jumlah Pesan: $_buyQuantity porsi'),
-            Text('Harga per Porsi: ${_product!.formattedPrice}'),
-            const Divider(height: 20),
-            Text(
-              'Total Bayar: Rp ${totalBayar.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.')}',
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppTheme.primaryColor),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              'Catatan: Setelah konfirmasi, stok barang di sistem akan berkurang secara otomatis.',
-              style: TextStyle(fontSize: 12, color: Colors.grey),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Batal'),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.secondaryColor),
-            onPressed: () async {
-              Navigator.pop(ctx);
-              setState(() {
-                _isBuying = true;
-              });
-
-              final provider = Provider.of<ProductProvider>(context, listen: false);
-              final result = await provider.buyProduct(_product!.id, _buyQuantity);
-
-              if (!mounted) return;
-              setState(() {
-                _isBuying = false;
-              });
-
-              if (result['success'] == true) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(result['message'] ?? 'Pembelian berhasil! Stok otomatis berkurang.'),
-                    backgroundColor: AppTheme.secondaryColor,
-                    duration: const Duration(seconds: 4),
-                  ),
-                );
-                _loadProductDetail();
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(result['message'] ?? 'Pembelian gagal.'),
-                    backgroundColor: Colors.redAccent,
-                  ),
-                );
-              }
-            },
-            child: const Text('Konfirmasi & Beli'),
-          ),
-        ],
       ),
     );
   }

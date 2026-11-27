@@ -130,11 +130,21 @@ class ProductProvider with ChangeNotifier {
   }
 
   // Pembelian produk oleh pelanggan (Otomatis mengurangi stok lokal & server)
-  Future<Map<String, dynamic>> buyProduct(int id, int quantity) async {
+  Future<Map<String, dynamic>> buyProduct(
+    int id,
+    int quantity, {
+    String paymentMethod = 'Tunai',
+    String notes = '',
+  }) async {
     _isLoading = true;
     notifyListeners();
 
-    final res = await ApiService.buyProduct(id, quantity);
+    final res = await ApiService.buyProduct(
+      id,
+      quantity,
+      paymentMethod: paymentMethod,
+      notes: notes,
+    );
     _isLoading = false;
 
     if (res.success && res.data != null) {

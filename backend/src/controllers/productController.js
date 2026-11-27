@@ -250,13 +250,15 @@ const deleteProduct = async (req, res) => {
 };
 
 /**
- * Controller: Pembelian Produk (Otomatis Mengurangi Stok)
+ * Controller: Pembelian Produk (Otomatis Mengurangi Stok & Catat Transaksi Pembayaran)
  * Dapat diakses oleh Pelanggan, Kasir, atau Admin
  */
 const buyProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const quantity = parseInt(req.body.quantity || 1, 10);
+    const payment_method = req.body.payment_method || 'Tunai';
+    const notes = req.body.notes || '';
 
     if (isNaN(quantity) || quantity <= 0) {
       return errorResponse(res, 400, 'Jumlah pembelian minimal 1 item.');
@@ -298,15 +300,79 @@ const buyProduct = async (req, res) => {
     };
 
     const totalPrice = parseFloat(product.price) * quantity;
+    const orderNumber = 'DB-' + Date.now().toString().slice(-6);
+
+    // Catat data transaksi & pesanan
+    let orderId = null;
+    try {
+      const [resOrder] = await db.query(
+        `INSERT INTO orders (order_number, user_id, buyer_name, product_id, product_name, quantity, price_per_item, total_price, payment_method, status, estimated_minutes)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Sedang Dimasak', 3)`,
+        [
+          orderNumber,
+          req.user ? req.user.id : null,
+          req.user ? req.user.name : 'Pelanggan',
+          product.id,
+          product.name,
+          quantity,
+          parseFloat(product.price),
+          totalPrice,
+          payment_method,
+        ]
+      );
+      orderId = resOrder.insertId;
+    } catch (dbErr) {
+      if (dbErr.code === 'ER_NO_SUCH_TABLE') {
+        await db.query(`
+          CREATE TABLE IF NOT EXISTS orders (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            order_number VARCHAR(50) NOT NULL,
+            user_id INT NULL,
+            buyer_name VARCHAR(100) NOT NULL,
+            product_id INT NOT NULL,
+            product_name VARCHAR(150) NOT NULL,
+            quantity INT NOT NULL DEFAULT 1,
+            price_per_item DECIMAL(12, 2) NOT NULL,
+            total_price DECIMAL(12, 2) NOT NULL,
+            payment_method VARCHAR(50) NOT NULL DEFAULT 'Tunai',
+            status VARCHAR(50) NOT NULL DEFAULT 'Sedang Dimasak',
+            estimated_minutes INT NOT NULL DEFAULT 3,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          )
+        `);
+        const [resRetry] = await db.query(
+          `INSERT INTO orders (order_number, user_id, buyer_name, product_id, product_name, quantity, price_per_item, total_price, payment_method, status, estimated_minutes)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Sedang Dimasak', 3)`,
+          [
+            orderNumber,
+            req.user ? req.user.id : null,
+            req.user ? req.user.name : 'Pelanggan',
+            product.id,
+            product.name,
+            quantity,
+            parseFloat(product.price),
+            totalPrice,
+            payment_method,
+          ]
+        );
+        orderId = resRetry.insertId;
+      }
+    }
 
     return successResponse(res, 200, `Pembelian ${quantity}x "${product.name}" berhasil! Stok otomatis berkurang.`, {
       product: formatProduct(updatedProduct, req),
       transaction: {
+        order_id: orderId,
+        order_number: orderNumber,
         product_id: product.id,
         product_name: product.name,
         quantity,
         price_per_item: parseFloat(product.price),
         total_price: totalPrice,
+        payment_method: payment_method,
+        status: 'Sedang Dimasak',
+        estimated_minutes: 3,
+        notes: notes,
         previous_stock: currentStock,
         remaining_stock: newStock,
         buyer_id: req.user ? req.user.id : null,
@@ -321,6 +387,22 @@ const buyProduct = async (req, res) => {
   }
 };
 
+/**
+ * Controller: Mengambil daftar riwayat pesanan (Orders)
+ */
+const getOrders = async (req, res) => {
+  try {
+    const [orders] = await db.query(`SELECT * FROM orders ORDER BY created_at DESC LIMIT 30`).catch(async (err) => {
+      if (err.code === 'ER_NO_SUCH_TABLE') return [[]];
+      throw err;
+    });
+    return successResponse(res, 200, 'Daftar riwayat pesanan berhasil diambil.', orders);
+  } catch (error) {
+    console.error('Get Orders Error:', error);
+    return errorResponse(res, 500, 'Gagal mengambil riwayat pesanan.', error.message);
+  }
+};
+
 module.exports = {
   getAllProducts,
   getProductById,
@@ -328,5 +410,6 @@ module.exports = {
   updateProduct,
   deleteProduct,
   buyProduct,
+  getOrders,
 };
 

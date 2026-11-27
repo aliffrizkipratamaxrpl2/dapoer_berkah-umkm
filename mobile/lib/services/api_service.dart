@@ -412,14 +412,23 @@ class ApiService {
     }
   }
 
-  // Beli Produk (Otomatis Mengurangi Stok di Database)
-  static Future<ApiResponse<Map<String, dynamic>>> buyProduct(int id, int quantity) async {
+  // Beli Produk (Otomatis Mengurangi Stok di Database & Pilihan Metode Pembayaran)
+  static Future<ApiResponse<Map<String, dynamic>>> buyProduct(
+    int id,
+    int quantity, {
+    String paymentMethod = 'Tunai',
+    String notes = '',
+  }) async {
     try {
       final headers = await _getHeaders(isJson: true);
       final response = await http.post(
         Uri.parse('${ApiConfig.productsUrl}/$id/buy'),
         headers: headers,
-        body: jsonEncode({'quantity': quantity}),
+        body: jsonEncode({
+          'quantity': quantity,
+          'payment_method': paymentMethod,
+          'notes': notes,
+        }),
       ).timeout(const Duration(seconds: 10));
 
       final body = jsonDecode(response.body);

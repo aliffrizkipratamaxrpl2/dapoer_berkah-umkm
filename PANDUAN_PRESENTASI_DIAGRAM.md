@@ -44,19 +44,23 @@ Panduan ini dibuat dengan bahasa yang santai, jelas, dan mudah dipahami oleh sis
 
 Diagram ini dibagi menjadi **3 Alur Bernomor (Langkah 1 s/d 6)** agar alurnya mudah dibaca:
 
-### ALUR A: Alur Pelanggan Membeli Menu & Stok Berkurang Otomatis (FITUR UTAMA)
-1. **Langkah 1:** Pelanggan membuka aplikasi dan memilih salah satu menu di katalog.
-2. **Langkah 2:** Menentukan berapa porsi yang ingin dibeli dengan tombol `[+]` atau `[-]`.
-3. **Pengecekan Stok:** Sistem memeriksa: *Apakah stok makanan mencukupi?*
+### ALUR A: Alur Pelanggan Membeli, Membayar, Dimasak, & Dihidangkan (FITUR UTAMA)
+1. **Langkah 1:** Pelanggan membuka aplikasi dan memilih menu kuliner di katalog serta menentukan jumlah porsi dengan tombol `[+]` atau `[-]`.
+2. **Pengecekan Stok:** Sistem memeriksa: *Apakah stok makanan mencukupi?*
    - *Jika Stok Habis / Kurang:* Tombol beli dikunci dan muncul peringatan merah "Stok Tidak Cukup".
-   - *Jika Stok Cukup:* Lanjut ke konfirmasi pesanan.
-4. **Langkah 3:** Muncul jendela dialog konfirmasi yang menampilkan nama menu, jumlah porsi, dan total harga (Rp).
-5. **Langkah 4:** Pelanggan menekan tombol hijau **"Konfirmasi & Beli"**.
-6. **Langkah 5 (Eksekusi Database):** Server backend langsung memotong sisa stok di database cloud dengan query:
+   - *Jika Stok Cukup:* Lanjut ke pemilihan metode pembayaran.
+3. **Langkah 2 (Pilih Metode Pembayaran):** Pelanggan memilih metode pembayaran:
+   - 💵 **Tunai (Bayar di Kasir)**
+   - 📱 **QRIS (GoPay, OVO, DANA, ShopeePay)**
+   - 🏦 **Transfer Bank (BCA, Mandiri, BRI)**
+4. **Langkah 3 (Konfirmasi & Bayar):** Pelanggan menekan tombol hijau **"Konfirmasi & Bayar"**. Backend langsung mencatat nomor pesanan (`DB-XXXXXX`) dan otomatis memotong sisa stok di database MySQL cloud:
    ```sql
    UPDATE products SET stock = stock - jumlah_beli WHERE id = ?
    ```
-7. **Langkah 6:** Aplikasi menampilkan notifikasi hijau **"Pembelian Berhasil!"** dan angka sisa stok di layar HP langsung ter-update secara otomatis!
+5. **Langkah 4 (Menunggu Dimasak):** Layar HP otomatis beralih ke tampilan **Status Pesanan (Sedang Dimasak)**:
+   - Dilengkapi **Timer hitung mundur memasak (3 Menit)** dan animasi koki memasak.
+   - Tersedia tombol **"⚡ Percepat Memasak"** khusus untuk kemudahan simulasi demonstrasi saat diuji oleh penguji.
+6. **Langkah 5 (Menu Siap Dihidangkan):** Ketika waktu memasak selesai, status otomatis berubah menjadi hijau cerah: **"🎉 Menu Sudah Jadi & Siap Dihidangkan!"**, pelanggan tinggal mengambil hidangan di counter / disajikan di meja.
 
 ---
 
